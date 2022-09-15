@@ -59,43 +59,26 @@ uint8_t CPU6502::abs()
 
 void CPU6502::lda_imm()
 {
-    const uint8_t data = imm();
-    registers.a        = data;
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (data & BIT_7) {
-        registers.p.set_negative_flag();
-    }
+    lda(imm());
 }
 
 void CPU6502::lda_zp()
 {
-    const uint8_t data = zp();
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (data & BIT_7) {
-        registers.p.set_negative_flag();
-    }
-    registers.a = data;
+    lda(zp());
 }
 
 void CPU6502::lda_zpx()
 {
-    const uint8_t data = zpx();
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (data & BIT_7) {
-        registers.p.set_negative_flag();
-    }
-    registers.a = data;
+    lda(zpx());
 }
 
 void CPU6502::lda_abs()
 {
-    const uint8_t data = abs();
+    lda(abs());
+}
+
+void CPU6502::lda(uint8_t data)
+{
     if (data == 0) {
         registers.p.set_zero_flag();
     }

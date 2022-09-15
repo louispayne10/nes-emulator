@@ -69,6 +69,9 @@ public:
     void lda_zpx();
     void lda_abs();
 
+    // generic instructions
+    void lda(uint8_t data);
+
     // TODO: Move this to a table once we can
     using instruction_fn = void (CPU6502::*)();
     std::unordered_map<uint8_t, instruction_fn> m_InstructionMap;
