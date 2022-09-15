@@ -3,6 +3,7 @@
 #include <cstdint>
 
 enum OPCODE {
+    OPCODE_LDA_INDX = 0xA1,
     OPCODE_LDA_ZP   = 0xA5,
     OPCODE_LDA_IMM  = 0xA9,
     OPCODE_LDA_ABS  = 0xAD,

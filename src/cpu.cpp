@@ -14,6 +14,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_LDA_ABS]  = &CPU6502::lda_abs;
     m_InstructionMap[OPCODE_LDA_ABSX] = &CPU6502::lda_absx;
     m_InstructionMap[OPCODE_LDA_ABSY] = &CPU6502::lda_absy;
+    m_InstructionMap[OPCODE_LDA_INDX] = &CPU6502::lda_indx;
 }
 
 void CPU6502::process_instruction()
@@ -83,6 +84,18 @@ uint8_t CPU6502::absy()
     return memory.read_byte(byte_addr);
 }
 
+uint8_t CPU6502::indx()
+{
+    const uint8_t operand = memory.read_byte(registers.pc++);
+    const uint8_t x       = registers.x;
+
+    const uint8_t lsb_addr    = operand + x;
+    const uint8_t lsb         = memory.read_byte(lsb_addr);
+    const uint8_t msb         = memory.read_byte(lsb_addr + 1);
+    const uint16_t final_addr = (uint16_t)((msb << 8) | lsb);
+    return memory.read_byte(final_addr);
+}
+
 void CPU6502::lda_imm()
 {
     lda(imm());
@@ -111,6 +124,11 @@ void CPU6502::lda_absx()
 void CPU6502::lda_absy()
 {
     lda(absy());
+}
+
+void CPU6502::lda_indx()
+{
+    lda(indx());
 }
 
 void CPU6502::lda(uint8_t data)

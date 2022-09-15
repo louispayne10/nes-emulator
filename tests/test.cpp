@@ -179,3 +179,32 @@ TEST_CASE("lda absy", "[lda],[cpu],[absy],[instruction]")
         REQUIRE(cpu.registers.a == 42);
     }
 }
+
+TEST_CASE("lda indx", "[lda],[cpu],[indx],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_LDA_INDX);
+    cpu.memory.write_byte(1, 0xF0);
+
+    SECTION("non zero, non negative, unwrapped load")
+    {
+        cpu.registers.x = 4;
+        cpu.memory.write_byte(0xF4, 0x12);
+        cpu.memory.write_byte(0xF5, 0x34);
+        cpu.memory.write_byte(0x3412, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 42);
+    }
+
+    SECTION("non zero, non negative, wrapped load")
+    {
+        cpu.registers.x = 0x20;
+        cpu.memory.write_byte(0x10, 0x12);
+        cpu.memory.write_byte(0x11, 0x34);
+        cpu.memory.write_byte(0x3412, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 42);
+    }
+}
