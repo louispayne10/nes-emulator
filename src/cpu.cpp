@@ -8,11 +8,11 @@ constexpr uint8_t BIT_7 = (1 << 7);
 
 CPU6502::CPU6502()
 {
-    m_InstructionMap.insert(std::make_pair(OPCODE_LDA_IMM, &CPU6502::lda_imm));
-    m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ZP, &CPU6502::lda_zp));
-    m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ZPX, &CPU6502::lda_zpx));
-    m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ABS, &CPU6502::lda_abs));
-    m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ABSX, &CPU6502::lda_absx));
+    m_InstructionMap[OPCODE_LDA_IMM]  = &CPU6502::lda_imm;
+    m_InstructionMap[OPCODE_LDA_ZP]   = &CPU6502::lda_zp;
+    m_InstructionMap[OPCODE_LDA_ZPX]  = &CPU6502::lda_zpx;
+    m_InstructionMap[OPCODE_LDA_ABS]  = &CPU6502::lda_abs;
+    m_InstructionMap[OPCODE_LDA_ABSX] = &CPU6502::lda_absx;
 }
 
 void CPU6502::process_instruction()
