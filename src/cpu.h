@@ -63,6 +63,7 @@ public:
     uint8_t zpx();
     uint8_t abs();
     uint8_t absx();
+    uint8_t absy();
 
     // specific instructions
     void lda_imm();
@@ -70,6 +71,7 @@ public:
     void lda_zpx();
     void lda_abs();
     void lda_absx();
+    void lda_absy();
 
     // generic instructions
     void lda(uint8_t data);
