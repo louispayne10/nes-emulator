@@ -11,6 +11,7 @@ CPU6502::CPU6502()
     m_InstructionMap.insert(std::make_pair(OPCODE_LDA_IMM, &CPU6502::lda_imm));
     m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ZP, &CPU6502::lda_zp));
     m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ZPX, &CPU6502::lda_zpx));
+    m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ABS, &CPU6502::lda_abs));
 }
 
 void CPU6502::process_instruction()
@@ -49,6 +50,13 @@ uint8_t CPU6502::zpx()
     return memory.read_byte(byte_addr);
 }
 
+uint8_t CPU6502::abs()
+{
+    const uint16_t instruction_offset = memory.read_word(registers.pc);
+    registers.pc += 2;
+    return memory.read_byte(instruction_offset);
+}
+
 void CPU6502::lda_imm()
 {
     const uint8_t data = imm();
@@ -76,6 +84,18 @@ void CPU6502::lda_zp()
 void CPU6502::lda_zpx()
 {
     const uint8_t data = zpx();
+    if (data == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (data & BIT_7) {
+        registers.p.set_negative_flag();
+    }
+    registers.a = data;
+}
+
+void CPU6502::lda_abs()
+{
+    const uint8_t data = abs();
     if (data == 0) {
         registers.p.set_zero_flag();
     }

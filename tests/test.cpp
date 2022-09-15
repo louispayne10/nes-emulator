@@ -100,3 +100,27 @@ TEST_CASE("lda zpx", "[lda, cpu, zpx, instruction]")
         REQUIRE(cpu.registers.a == 42);
     }
 }
+
+TEST_CASE("lda abs", "[lda, cpu, abs, instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_LDA_ABS);
+
+    SECTION("non zero, non negative, first page load")
+    {
+        cpu.memory.write_word(1, 0xA0);
+        cpu.memory.write_byte(0xA0, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 42);
+    }
+
+    SECTION("non zero, non negative, non first page load")
+    {
+        cpu.memory.write_word(1, 0x1F0);
+        cpu.memory.write_byte(0x1F0, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 42);
+    }
+}

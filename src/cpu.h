@@ -61,11 +61,13 @@ public:
     uint8_t imm();
     uint8_t zp();
     uint8_t zpx();
+    uint8_t abs();
 
     // specific instructions
     void lda_imm();
     void lda_zp();
     void lda_zpx();
+    void lda_abs();
 
     // TODO: Move this to a table once we can
     using instruction_fn = void (CPU6502::*)();
