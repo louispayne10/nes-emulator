@@ -12,6 +12,7 @@ CPU6502::CPU6502()
     m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ZP, &CPU6502::lda_zp));
     m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ZPX, &CPU6502::lda_zpx));
     m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ABS, &CPU6502::lda_abs));
+    m_InstructionMap.insert(std::make_pair(OPCODE_LDA_ABSX, &CPU6502::lda_absx));
 }
 
 void CPU6502::process_instruction()
@@ -57,6 +58,18 @@ uint8_t CPU6502::abs()
     return memory.read_byte(instruction_offset);
 }
 
+uint8_t CPU6502::absx()
+{
+    const uint16_t instruction_offset = memory.read_word(registers.pc);
+    const uint8_t x                   = registers.x;
+
+    registers.pc += 2;
+
+    // Let it wrap on overflow - think that's correct behaviour
+    const uint16_t byte_addr = instruction_offset + (uint16_t)x;
+    return memory.read_byte(byte_addr);
+}
+
 void CPU6502::lda_imm()
 {
     lda(imm());
@@ -75,6 +88,11 @@ void CPU6502::lda_zpx()
 void CPU6502::lda_abs()
 {
     lda(abs());
+}
+
+void CPU6502::lda_absx()
+{
+    lda(absx());
 }
 
 void CPU6502::lda(uint8_t data)

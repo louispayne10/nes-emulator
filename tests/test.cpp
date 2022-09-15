@@ -124,3 +124,32 @@ TEST_CASE("lda abs", "[lda],[cpu],[abs],[instruction]")
         REQUIRE(cpu.registers.a == 42);
     }
 }
+
+TEST_CASE("lda absx", "[lda],[cpu],[absx],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_LDA_ABSX);
+
+    SECTION("non zero, non negative, unwrapped load")
+    {
+        cpu.memory.write_word(1, 0xB0);
+        cpu.registers.x = 0x10;
+        cpu.memory.write_byte(0xC0, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 42);
+    }
+
+    SECTION("non zero, non negative, wrapped load")
+    {
+        // TODO: verify that this is the behaviour that is supposed to happen
+        // I've assumed that if X + addr is greater than 0xFFFF that it wraps
+        // around to 0
+        cpu.memory.write_word(1, 0xFFF0);
+        cpu.registers.x = 0xFF;
+        cpu.memory.write_byte(0xEF, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 42);
+    }
+}
