@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <sys/types.h>
 
 #include "cpu.h"
 #include "opcodes.h"
@@ -203,6 +204,24 @@ TEST_CASE("lda indx", "[lda],[cpu],[indx],[instruction]")
         cpu.memory.write_byte(0x10, 0x12);
         cpu.memory.write_byte(0x11, 0x34);
         cpu.memory.write_byte(0x3412, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 42);
+    }
+}
+
+TEST_CASE("lda indy", "[lda],[cpu],[indy],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_LDA_INDY);
+
+    SECTION("non ero, non negative load")
+    {
+        cpu.memory.write_byte(1, 0x20);
+        cpu.memory.write_byte(0x20, 0x12);
+        cpu.memory.write_byte(0x21, 0x34);
+        cpu.registers.y = 0x10;
+        cpu.memory.write_byte(0x3412 + 0x10, 42);
         cpu.process_instruction();
 
         REQUIRE(cpu.registers.a == 42);
