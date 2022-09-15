@@ -3,7 +3,7 @@
 #include "cpu.h"
 #include "opcodes.h"
 
-TEST_CASE("lda imm", "[lda, cpu, imm, instruction]")
+TEST_CASE("lda imm", "[lda],[cpu],[imm],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_LDA_IMM);
@@ -39,7 +39,7 @@ TEST_CASE("lda imm", "[lda, cpu, imm, instruction]")
     }
 }
 
-TEST_CASE("lda zp", "[lda, cpu, zp, instruction]")
+TEST_CASE("lda zp", "[lda],[cpu],[zp],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_LDA_ZP);
@@ -74,7 +74,7 @@ TEST_CASE("lda zp", "[lda, cpu, zp, instruction]")
     }
 }
 
-TEST_CASE("lda zpx", "[lda, cpu, zpx, instruction]")
+TEST_CASE("lda zpx", "[lda],[cpu],[zpx],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_LDA_ZPX);
@@ -101,7 +101,7 @@ TEST_CASE("lda zpx", "[lda, cpu, zpx, instruction]")
     }
 }
 
-TEST_CASE("lda abs", "[lda, cpu, abs, instruction]")
+TEST_CASE("lda abs", "[lda],[cpu],[abs],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_LDA_ABS);
