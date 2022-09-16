@@ -114,7 +114,10 @@ TEST_CASE("lda abs", "[lda],[cpu],[abs],[instruction]")
 
     SECTION("non zero, non negative, first page load")
     {
-        cpu.memory.write_word(1, 0xA0);
+        // Here we write the 2 byte operand a byte at a time
+        // this helps test that are endian code stuff works
+        cpu.memory.write_byte(1, 0xA0);
+        cpu.memory.write_byte(2, 0x00);
         cpu.memory.write_byte(0xA0, 42);
         cpu.process_instruction();
 
@@ -124,7 +127,8 @@ TEST_CASE("lda abs", "[lda],[cpu],[abs],[instruction]")
 
     SECTION("non zero, non negative, non first page load")
     {
-        cpu.memory.write_word(1, 0x1F0);
+        cpu.memory.write_byte(1, 0xF0);
+        cpu.memory.write_byte(2, 0x01);
         cpu.memory.write_byte(0x1F0, 42);
         cpu.process_instruction();
 
