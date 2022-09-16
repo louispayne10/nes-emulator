@@ -4,7 +4,7 @@
 #include "opcodes.h"
 #include <utility>
 
-constexpr uint8_t BIT_7 = (1 << 7);
+static constexpr uint8_t BIT_7 = (1 << 7);
 
 CPU6502::CPU6502()
 {
