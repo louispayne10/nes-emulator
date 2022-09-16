@@ -61,6 +61,7 @@ public:
     uint8_t imm();
     uint8_t zp();
     uint8_t zpx();
+    uint8_t zpy(); // TODO: add test for this
     uint8_t abs();
     uint8_t absx();
     uint8_t absy();
@@ -77,8 +78,15 @@ public:
     void lda_indx();
     void lda_indy();
 
+    void ldx_imm();
+    void ldx_zp();
+    void ldx_zpy();
+    void ldx_abs();
+    void ldx_absy();
+
     // generic instructions
     void lda(uint8_t data);
+    void ldx(uint8_t data);
 
     // TODO: Move this to a table once we can
     using instruction_fn = void (CPU6502::*)();

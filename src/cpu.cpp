@@ -16,6 +16,12 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_LDA_ABSY] = &CPU6502::lda_absy;
     m_InstructionMap[OPCODE_LDA_INDX] = &CPU6502::lda_indx;
     m_InstructionMap[OPCODE_LDA_INDY] = &CPU6502::lda_indy;
+
+    m_InstructionMap[OPCODE_LDX_IMM]  = &CPU6502::ldx_imm;
+    m_InstructionMap[OPCODE_LDX_ZP]   = &CPU6502::ldx_zp;
+    m_InstructionMap[OPCODE_LDX_ZPY]  = &CPU6502::ldx_zpy;
+    m_InstructionMap[OPCODE_LDX_ABS]  = &CPU6502::ldx_abs;
+    m_InstructionMap[OPCODE_LDX_ABSY] = &CPU6502::ldx_absy;
 }
 
 void CPU6502::process_instruction()
@@ -48,6 +54,16 @@ uint8_t CPU6502::zpx()
 
     // Let this addition wrap on overflow as the NES did
     const uint8_t byte_addr = instruction_offset + x;
+    return memory.read_byte(byte_addr);
+}
+
+uint8_t CPU6502::zpy()
+{
+    const uint8_t operand = memory.read_byte(registers.pc++);
+    const uint8_t y       = registers.y;
+
+    // Let this addition wrap on overflow as the NES did
+    const uint8_t byte_addr = operand + y;
     return memory.read_byte(byte_addr);
 }
 
@@ -144,6 +160,31 @@ void CPU6502::lda_indy()
     lda(indy());
 }
 
+void CPU6502::ldx_imm()
+{
+    ldx(imm());
+}
+
+void CPU6502::ldx_zp()
+{
+    ldx(zp());
+}
+
+void CPU6502::ldx_zpy()
+{
+    ldx(zpy());
+}
+
+void CPU6502::ldx_abs()
+{
+    ldx(abs());
+}
+
+void CPU6502::ldx_absy()
+{
+    ldx(absy());
+}
+
 void CPU6502::lda(uint8_t data)
 {
     if (data == 0) {
@@ -153,4 +194,15 @@ void CPU6502::lda(uint8_t data)
         registers.p.set_negative_flag();
     }
     registers.a = data;
+}
+
+void CPU6502::ldx(uint8_t data)
+{
+    if (data == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (data & BIT_7) {
+        registers.p.set_negative_flag();
+    }
+    registers.x = data;
 }
