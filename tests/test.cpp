@@ -52,6 +52,7 @@ TEST_CASE("lda zp", "[lda],[cpu],[zp],[instruction]")
         cpu.memory.write_byte(data_offset, 59);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == 59);
     }
 
@@ -60,6 +61,7 @@ TEST_CASE("lda zp", "[lda],[cpu],[zp],[instruction]")
         cpu.memory.write_byte(data_offset, 0);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == 0);
         REQUIRE(cpu.registers.p.zero_flag_set());
     }
@@ -70,6 +72,7 @@ TEST_CASE("lda zp", "[lda],[cpu],[zp],[instruction]")
         cpu.memory.write_byte(data_offset, byte_to_load);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == byte_to_load);
         REQUIRE(cpu.registers.p.negative_flag_set());
     }
@@ -88,6 +91,7 @@ TEST_CASE("lda zpx", "[lda],[cpu],[zpx],[instruction]")
         cpu.memory.write_byte(offset_from_instruction + 0x15, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == 42);
     }
 
@@ -98,6 +102,7 @@ TEST_CASE("lda zpx", "[lda],[cpu],[zpx],[instruction]")
         cpu.memory.write_byte(addr_to_write, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == 42);
     }
 }
@@ -113,6 +118,7 @@ TEST_CASE("lda abs", "[lda],[cpu],[abs],[instruction]")
         cpu.memory.write_byte(0xA0, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 3);
         REQUIRE(cpu.registers.a == 42);
     }
 
@@ -122,6 +128,7 @@ TEST_CASE("lda abs", "[lda],[cpu],[abs],[instruction]")
         cpu.memory.write_byte(0x1F0, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 3);
         REQUIRE(cpu.registers.a == 42);
     }
 }
@@ -138,6 +145,7 @@ TEST_CASE("lda absx", "[lda],[cpu],[absx],[instruction]")
         cpu.memory.write_byte(0xC0, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 3);
         REQUIRE(cpu.registers.a == 42);
     }
 
@@ -151,6 +159,7 @@ TEST_CASE("lda absx", "[lda],[cpu],[absx],[instruction]")
         cpu.memory.write_byte(0xEF, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 3);
         REQUIRE(cpu.registers.a == 42);
     }
 }
@@ -167,6 +176,7 @@ TEST_CASE("lda absy", "[lda],[cpu],[absy],[instruction]")
         cpu.memory.write_byte(0xC0, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 3);
         REQUIRE(cpu.registers.a == 42);
     }
 
@@ -177,6 +187,7 @@ TEST_CASE("lda absy", "[lda],[cpu],[absy],[instruction]")
         cpu.memory.write_byte(0xEF, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 3);
         REQUIRE(cpu.registers.a == 42);
     }
 }
@@ -195,6 +206,7 @@ TEST_CASE("lda indx", "[lda],[cpu],[indx],[instruction]")
         cpu.memory.write_byte(0x3412, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == 42);
     }
 
@@ -206,6 +218,7 @@ TEST_CASE("lda indx", "[lda],[cpu],[indx],[instruction]")
         cpu.memory.write_byte(0x3412, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == 42);
     }
 }
@@ -224,6 +237,7 @@ TEST_CASE("lda indy", "[lda],[cpu],[indy],[instruction]")
         cpu.memory.write_byte(0x3412 + 0x10, 42);
         cpu.process_instruction();
 
+        REQUIRE(cpu.registers.pc == 2);
         REQUIRE(cpu.registers.a == 42);
     }
 }
