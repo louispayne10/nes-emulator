@@ -30,9 +30,6 @@ void CPU6502::process_instruction()
     (this->*handler_fn)();
 }
 
-/* Add with carry */
-void adc() {}
-
 uint8_t CPU6502::imm()
 {
     return memory.read_byte(registers.pc++);
