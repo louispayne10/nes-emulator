@@ -24,26 +24,26 @@ bool operator==(StatusRegister lhs, StatusRegister rhs)
 
 CPU6502::CPU6502()
 {
-    m_InstructionMap[OPCODE_LDA_IMM]  = &CPU6502::lda_imm;
-    m_InstructionMap[OPCODE_LDA_ZP]   = &CPU6502::lda_zp;
-    m_InstructionMap[OPCODE_LDA_ZPX]  = &CPU6502::lda_zpx;
-    m_InstructionMap[OPCODE_LDA_ABS]  = &CPU6502::lda_abs;
-    m_InstructionMap[OPCODE_LDA_ABSX] = &CPU6502::lda_absx;
-    m_InstructionMap[OPCODE_LDA_ABSY] = &CPU6502::lda_absy;
-    m_InstructionMap[OPCODE_LDA_INDX] = &CPU6502::lda_indx;
-    m_InstructionMap[OPCODE_LDA_INDY] = &CPU6502::lda_indy;
+    m_InstructionMap[OPCODE_LDA_IMM]  = { "LDA", &CPU6502::lda, &CPU6502::imm };
+    m_InstructionMap[OPCODE_LDA_ZP]   = { "LDA", &CPU6502::lda, &CPU6502::zp };
+    m_InstructionMap[OPCODE_LDA_ZPX]  = { "LDA", &CPU6502::lda, &CPU6502::zpx };
+    m_InstructionMap[OPCODE_LDA_ABS]  = { "LDA", &CPU6502::lda, &CPU6502::abs };
+    m_InstructionMap[OPCODE_LDA_ABSX] = { "LDA", &CPU6502::lda, &CPU6502::absx };
+    m_InstructionMap[OPCODE_LDA_ABSY] = { "LDA", &CPU6502::lda, &CPU6502::absy };
+    m_InstructionMap[OPCODE_LDA_INDX] = { "LDA", &CPU6502::lda, &CPU6502::indx };
+    m_InstructionMap[OPCODE_LDA_INDY] = { "LDA", &CPU6502::lda, &CPU6502::indy };
 
-    m_InstructionMap[OPCODE_LDX_IMM]  = &CPU6502::ldx_imm;
-    m_InstructionMap[OPCODE_LDX_ZP]   = &CPU6502::ldx_zp;
-    m_InstructionMap[OPCODE_LDX_ZPY]  = &CPU6502::ldx_zpy;
-    m_InstructionMap[OPCODE_LDX_ABS]  = &CPU6502::ldx_abs;
-    m_InstructionMap[OPCODE_LDX_ABSY] = &CPU6502::ldx_absy;
+    m_InstructionMap[OPCODE_LDX_IMM]  = { "LDX", &CPU6502::ldx, &CPU6502::imm };
+    m_InstructionMap[OPCODE_LDX_ZP]   = { "LDX", &CPU6502::ldx, &CPU6502::zp };
+    m_InstructionMap[OPCODE_LDX_ZPY]  = { "LDX", &CPU6502::ldx, &CPU6502::zpy };
+    m_InstructionMap[OPCODE_LDX_ABS]  = { "LDX", &CPU6502::ldx, &CPU6502::abs };
+    m_InstructionMap[OPCODE_LDX_ABSY] = { "LDX", &CPU6502::ldx, &CPU6502::absy };
 
-    m_InstructionMap[OPCODE_LDY_IMM]  = &CPU6502::ldy_imm;
-    m_InstructionMap[OPCODE_LDY_ZP]   = &CPU6502::ldy_zp;
-    m_InstructionMap[OPCODE_LDY_ZPX]  = &CPU6502::ldy_zpx;
-    m_InstructionMap[OPCODE_LDY_ABS]  = &CPU6502::ldy_abs;
-    m_InstructionMap[OPCODE_LDY_ABSX] = &CPU6502::ldy_absx;
+    m_InstructionMap[OPCODE_LDY_IMM]  = { "LDY", &CPU6502::ldy, &CPU6502::imm };
+    m_InstructionMap[OPCODE_LDY_ZP]   = { "LDY", &CPU6502::ldy, &CPU6502::zp };
+    m_InstructionMap[OPCODE_LDY_ZPX]  = { "LDY", &CPU6502::ldy, &CPU6502::zpx };
+    m_InstructionMap[OPCODE_LDY_ABS]  = { "LDY", &CPU6502::ldy, &CPU6502::abs };
+    m_InstructionMap[OPCODE_LDY_ABSX] = { "LDY", &CPU6502::ldy, &CPU6502::absx };
 }
 
 void CPU6502::process_instruction()
@@ -54,8 +54,10 @@ void CPU6502::process_instruction()
         NOT_IMPLEMENTED();
     }
 
-    auto handler_fn = handler_it->second;
-    (this->*handler_fn)();
+    auto op            = handler_it->second.operation_fn;
+    auto addr          = handler_it->second.addressing_fn;
+    const uint8_t data = (this->*addr)();
+    (this->*op)(data);
 }
 
 uint8_t CPU6502::imm()
@@ -140,96 +142,6 @@ uint8_t CPU6502::indy()
     const uint16_t intermediate_addr = (uint16_t)((msb << 8) | lsb);
     const uint16_t final_addr        = intermediate_addr + registers.y;
     return memory.read_byte(final_addr);
-}
-
-void CPU6502::lda_imm()
-{
-    lda(imm());
-}
-
-void CPU6502::lda_zp()
-{
-    lda(zp());
-}
-
-void CPU6502::lda_zpx()
-{
-    lda(zpx());
-}
-
-void CPU6502::lda_abs()
-{
-    lda(abs());
-}
-
-void CPU6502::lda_absx()
-{
-    lda(absx());
-}
-
-void CPU6502::lda_absy()
-{
-    lda(absy());
-}
-
-void CPU6502::lda_indx()
-{
-    lda(indx());
-}
-
-void CPU6502::lda_indy()
-{
-    lda(indy());
-}
-
-void CPU6502::ldx_imm()
-{
-    ldx(imm());
-}
-
-void CPU6502::ldx_zp()
-{
-    ldx(zp());
-}
-
-void CPU6502::ldx_zpy()
-{
-    ldx(zpy());
-}
-
-void CPU6502::ldx_abs()
-{
-    ldx(abs());
-}
-
-void CPU6502::ldx_absy()
-{
-    ldx(absy());
-}
-
-void CPU6502::ldy_imm()
-{
-    ldy(imm());
-}
-
-void CPU6502::ldy_zp()
-{
-    ldy(zp());
-}
-
-void CPU6502::ldy_zpx()
-{
-    ldy(zpx());
-}
-
-void CPU6502::ldy_abs()
-{
-    ldy(abs());
-}
-
-void CPU6502::ldy_absx()
-{
-    ldy(absx());
 }
 
 void CPU6502::lda(uint8_t data)

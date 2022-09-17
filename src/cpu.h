@@ -65,50 +65,26 @@ public:
     uint8_t imm();
     uint8_t zp();
     uint8_t zpx();
-    uint8_t zpy(); // TODO: add test for this
+    uint8_t zpy();
     uint8_t abs();
     uint8_t absx();
     uint8_t absy();
     uint8_t indx();
     uint8_t indy();
 
-    // specific instructions
-    void lda_imm();
-    void lda_zp();
-    void lda_zpx();
-    void lda_abs();
-    void lda_absx();
-    void lda_absy();
-    void lda_indx();
-    void lda_indy();
-
-    void ldx_imm();
-    void ldx_zp();
-    void ldx_zpy();
-    void ldx_abs();
-    void ldx_absy();
-
-    void ldy_imm();
-    void ldy_zp();
-    void ldy_zpx();
-    void ldy_abs();
-    void ldy_absx();
-
     // generic instructions
     void lda(uint8_t data);
     void ldx(uint8_t data);
     void ldy(uint8_t data);
 
-    // TODO: Move this to a table once we can
-    using instruction_fn = void (CPU6502::*)();
-    std::unordered_map<uint8_t, instruction_fn> m_InstructionMap;
-
+    // TODO: Move this to a lookup table once we can
+    using operation_fn_t  = void (CPU6502::*)(uint8_t);
+    using addressing_fn_t = uint8_t (CPU6502::*)();
     struct Instruction
     {
         std::string name;
-        /* addressing mode function */
-        /* execute instruction function */
-        /* some information on clock cycles */
+        operation_fn_t operation_fn;
+        addressing_fn_t addressing_fn;
     };
-    // std::array<Instruction, 256> m_InstructionTable;
+    std::unordered_map<uint8_t, Instruction> m_InstructionMap;
 };
