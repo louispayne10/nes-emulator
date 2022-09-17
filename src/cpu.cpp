@@ -17,6 +17,11 @@ bool operator&(StatusRegFlag a, StatusRegFlag b)
     return (uint8_t)a & (uint8_t)b;
 }
 
+bool operator==(StatusRegister lhs, StatusRegister rhs)
+{
+    return lhs.reg == rhs.reg;
+}
+
 CPU6502::CPU6502()
 {
     m_InstructionMap[OPCODE_LDA_IMM]  = &CPU6502::lda_imm;

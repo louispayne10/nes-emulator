@@ -33,10 +33,8 @@ struct StatusRegister
 
     bool zero_flag_set() { return reg & StatusRegFlag::ZERO_MASK; }
     bool negative_flag_set() { return reg & StatusRegFlag::NEGATIVE_MASK; }
-
-    friend auto operator<=>(StatusRegister, StatusRegister) = default;
 };
-
+bool operator==(StatusRegister lhs, StatusRegister rhs);
 
 struct CpuRegisters
 {
