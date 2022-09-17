@@ -88,9 +88,16 @@ public:
     void ldx_abs();
     void ldx_absy();
 
+    void ldy_imm();
+    void ldy_zp();
+    void ldy_zpx();
+    void ldy_abs();
+    void ldy_absx();
+
     // generic instructions
     void lda(uint8_t data);
     void ldx(uint8_t data);
+    void ldy(uint8_t data);
 
     // TODO: Move this to a table once we can
     using instruction_fn = void (CPU6502::*)();

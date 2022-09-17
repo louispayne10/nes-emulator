@@ -38,6 +38,12 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_LDX_ZPY]  = &CPU6502::ldx_zpy;
     m_InstructionMap[OPCODE_LDX_ABS]  = &CPU6502::ldx_abs;
     m_InstructionMap[OPCODE_LDX_ABSY] = &CPU6502::ldx_absy;
+
+    m_InstructionMap[OPCODE_LDY_IMM]  = &CPU6502::ldy_imm;
+    m_InstructionMap[OPCODE_LDY_ZP]   = &CPU6502::ldy_zp;
+    m_InstructionMap[OPCODE_LDY_ZPX]  = &CPU6502::ldy_zpx;
+    m_InstructionMap[OPCODE_LDY_ABS]  = &CPU6502::ldy_abs;
+    m_InstructionMap[OPCODE_LDY_ABSX] = &CPU6502::ldy_absx;
 }
 
 void CPU6502::process_instruction()
@@ -201,6 +207,31 @@ void CPU6502::ldx_absy()
     ldx(absy());
 }
 
+void CPU6502::ldy_imm()
+{
+    ldy(imm());
+}
+
+void CPU6502::ldy_zp()
+{
+    ldy(zp());
+}
+
+void CPU6502::ldy_zpx()
+{
+    ldy(zpx());
+}
+
+void CPU6502::ldy_abs()
+{
+    ldy(abs());
+}
+
+void CPU6502::ldy_absx()
+{
+    ldy(absx());
+}
+
 void CPU6502::lda(uint8_t data)
 {
     if (data == 0) {
@@ -221,4 +252,15 @@ void CPU6502::ldx(uint8_t data)
         registers.p.set_negative_flag();
     }
     registers.x = data;
+}
+
+void CPU6502::ldy(uint8_t data)
+{
+    if (data == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (data & BIT_7) {
+        registers.p.set_negative_flag();
+    }
+    registers.y = data;
 }
