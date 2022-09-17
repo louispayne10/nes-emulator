@@ -11,26 +11,32 @@ struct Clock
     uint64_t cycle_count;
 };
 
+
+enum class StatusRegFlag : uint8_t {
+    CARRY_MASK       = (1 << 0),
+    ZERO_MASK        = (1 << 1),
+    INT_DISABLE_MASK = (1 << 3),
+    DECIMAL_MASK     = (1 << 4),
+    BFLAG_MASK       = (1 << 5),
+    OVERFLOW_MASK    = (1 << 6),
+    NEGATIVE_MASK    = (1 << 7)
+};
+StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b);
+bool operator&(StatusRegFlag a, StatusRegFlag b);
+
 struct StatusRegister
 {
-    uint8_t reg;
+    StatusRegFlag reg;
 
-    static constexpr uint8_t CARRY_MASK       = (1 << 0);
-    static constexpr uint8_t ZERO_MASK        = (1 << 1);
-    static constexpr uint8_t INT_DISABLE_MASK = (1 << 3);
-    static constexpr uint8_t DECIMAL_MASK     = (1 << 4);
-    static constexpr uint8_t BFLAG_MASK       = (1 << 5);
-    static constexpr uint8_t OVERFLOW_MASK    = (1 << 6);
-    static constexpr uint8_t NEGATIVE_MASK    = (1 << 7);
+    void set_zero_flag() { reg |= StatusRegFlag::ZERO_MASK; }
+    void set_negative_flag() { reg |= StatusRegFlag::NEGATIVE_MASK; }
 
-    void set_zero_flag() { reg |= ZERO_MASK; }
-    void set_negative_flag() { reg |= NEGATIVE_MASK; }
-
-    bool zero_flag_set() { return reg & ZERO_MASK; }
-    bool negative_flag_set() { return reg & NEGATIVE_MASK; }
+    bool zero_flag_set() { return reg & StatusRegFlag::ZERO_MASK; }
+    bool negative_flag_set() { return reg & StatusRegFlag::NEGATIVE_MASK; }
 
     friend auto operator<=>(StatusRegister, StatusRegister) = default;
 };
+
 
 struct CpuRegisters
 {

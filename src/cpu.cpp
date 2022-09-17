@@ -6,6 +6,17 @@
 
 static constexpr uint8_t BIT_7 = (1 << 7);
 
+StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b)
+{
+    a = (StatusRegFlag)((uint8_t)a | (uint8_t)b);
+    return a;
+}
+
+bool operator&(StatusRegFlag a, StatusRegFlag b)
+{
+    return (uint8_t)a & (uint8_t)b;
+}
+
 CPU6502::CPU6502()
 {
     m_InstructionMap[OPCODE_LDA_IMM]  = &CPU6502::lda_imm;
