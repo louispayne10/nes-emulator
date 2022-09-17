@@ -13,13 +13,13 @@ struct Clock
 
 
 enum class StatusRegFlag : uint8_t {
-    CARRY_MASK       = (1 << 0),
-    ZERO_MASK        = (1 << 1),
-    INT_DISABLE_MASK = (1 << 3),
-    DECIMAL_MASK     = (1 << 4),
-    BFLAG_MASK       = (1 << 5),
-    OVERFLOW_MASK    = (1 << 6),
-    NEGATIVE_MASK    = (1 << 7)
+    Carry      = (1 << 0),
+    Zero       = (1 << 1),
+    IntDisable = (1 << 3),
+    Decimal    = (1 << 4),
+    BFlag      = (1 << 5),
+    Overflow   = (1 << 6),
+    Negative   = (1 << 7)
 };
 StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b);
 bool operator&(StatusRegFlag a, StatusRegFlag b);
@@ -28,11 +28,14 @@ struct StatusRegister
 {
     StatusRegFlag reg;
 
-    void set_zero_flag() { reg |= StatusRegFlag::ZERO_MASK; }
-    void set_negative_flag() { reg |= StatusRegFlag::NEGATIVE_MASK; }
+    void set_zero_flag() { reg |= StatusRegFlag::Zero; }
+    void set_negative_flag() { reg |= StatusRegFlag::Negative; }
 
-    bool zero_flag_set() { return reg & StatusRegFlag::ZERO_MASK; }
-    bool negative_flag_set() { return reg & StatusRegFlag::NEGATIVE_MASK; }
+    bool zero_flag_set() { return reg & StatusRegFlag::Zero; }
+    bool negative_flag_set() { return reg & StatusRegFlag::Negative; }
+
+    void set_carry_bit() { reg |= StatusRegFlag::Carry; }
+    bool carry_bit_set() { return reg & StatusRegFlag::Carry; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
 
