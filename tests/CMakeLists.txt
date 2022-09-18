@@ -11,7 +11,8 @@ FetchContent_MakeAvailable(Catch2)
 
 SET(TEST_FILES lda_tests.cpp
                ldx_tests.cpp
-               ldy_tests.cpp)
+               ldy_tests.cpp
+               adc_tests.cpp)
 SET(NES_FILES ${CMAKE_SOURCE_DIR}/src/cpu.cpp
               ${CMAKE_SOURCE_DIR}/src/memory.cpp)
 

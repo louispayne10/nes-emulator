@@ -44,6 +44,15 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_LDY_ZPX]  = { "LDY", &CPU6502::ldy, &CPU6502::zpx };
     m_InstructionMap[OPCODE_LDY_ABS]  = { "LDY", &CPU6502::ldy, &CPU6502::abs };
     m_InstructionMap[OPCODE_LDY_ABSX] = { "LDY", &CPU6502::ldy, &CPU6502::absx };
+
+    m_InstructionMap[OPCODE_ADC_IMM]  = { "ADC", &CPU6502::adc, &CPU6502::imm };
+    m_InstructionMap[OPCODE_ADC_ZP]   = { "ADC", &CPU6502::adc, &CPU6502::zp };
+    m_InstructionMap[OPCODE_ADC_ZPX]  = { "ADC", &CPU6502::adc, &CPU6502::zpx };
+    m_InstructionMap[OPCODE_ADC_ABS]  = { "ADC", &CPU6502::adc, &CPU6502::abs };
+    m_InstructionMap[OPCODE_ADC_ABSX] = { "ADC", &CPU6502::adc, &CPU6502::absx };
+    m_InstructionMap[OPCODE_ADC_ABSY] = { "ADC", &CPU6502::adc, &CPU6502::absy };
+    m_InstructionMap[OPCODE_ADC_INDX] = { "ADC", &CPU6502::adc, &CPU6502::indx };
+    m_InstructionMap[OPCODE_ADC_INDY] = { "ADC", &CPU6502::adc, &CPU6502::indy };
 }
 
 void CPU6502::process_instruction()
@@ -175,4 +184,28 @@ void CPU6502::ldy(uint8_t data)
         registers.p.set_negative_flag();
     }
     registers.y = data;
+}
+
+void CPU6502::adc(uint8_t data)
+{
+    const uint16_t res = registers.a + data + registers.p.carry_bit_set();
+    if (res == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (res & BIT_7) {
+        registers.p.set_negative_flag();
+    }
+    if (res & 0xFF00) {
+        registers.p.set_carry_bit();
+    }
+    if (!(registers.a & BIT_7) && !(data & BIT_7) && (res & BIT_7)) {
+        // In this case two positive numbers added to a negative number
+        registers.p.set_overflow_bit();
+    }
+    if ((registers.a & BIT_7) && (data & BIT_7) && !(res & BIT_7)) {
+        // In this case two negative numbers added to a positive number
+        registers.p.set_overflow_bit();
+    }
+
+    registers.a = res & 0xFF;
 }

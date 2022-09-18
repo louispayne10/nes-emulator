@@ -36,6 +36,9 @@ struct StatusRegister
 
     void set_carry_bit() { reg |= StatusRegFlag::Carry; }
     bool carry_bit_set() { return reg & StatusRegFlag::Carry; }
+
+    void set_overflow_bit() { reg |= StatusRegFlag::Overflow; }
+    bool overflow_flag_set() { return reg & StatusRegFlag::Overflow; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
 
@@ -79,6 +82,7 @@ public:
     void lda(uint8_t data);
     void ldx(uint8_t data);
     void ldy(uint8_t data);
+    void adc(uint8_t data);
 
     // TODO: Move this to a lookup table once we can
     using operation_fn_t  = void (CPU6502::*)(uint8_t);
