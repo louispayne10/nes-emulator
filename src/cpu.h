@@ -11,7 +11,6 @@ struct Clock
     uint64_t cycle_count;
 };
 
-
 enum class StatusRegFlag : uint8_t {
     Carry      = (1 << 0),
     Zero       = (1 << 1),
@@ -29,16 +28,16 @@ struct StatusRegister
     StatusRegFlag reg;
 
     void set_zero_flag() { reg |= StatusRegFlag::Zero; }
-    void set_negative_flag() { reg |= StatusRegFlag::Negative; }
+    bool zero_flag_set() const { return reg & StatusRegFlag::Zero; }
 
-    bool zero_flag_set() { return reg & StatusRegFlag::Zero; }
-    bool negative_flag_set() { return reg & StatusRegFlag::Negative; }
+    void set_negative_flag() { reg |= StatusRegFlag::Negative; }
+    bool negative_flag_set() const { return reg & StatusRegFlag::Negative; }
 
     void set_carry_bit() { reg |= StatusRegFlag::Carry; }
-    bool carry_bit_set() { return reg & StatusRegFlag::Carry; }
+    bool carry_bit_set() const { return reg & StatusRegFlag::Carry; }
 
     void set_overflow_bit() { reg |= StatusRegFlag::Overflow; }
-    bool overflow_flag_set() { return reg & StatusRegFlag::Overflow; }
+    bool overflow_flag_set() const { return reg & StatusRegFlag::Overflow; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
 
