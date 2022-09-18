@@ -96,6 +96,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_ASL_ABSX] = { "ASL", &CPU6502::asl, &CPU6502::absx };
 
     m_InstructionMap[OPCODE_BCC_REL] = { "BCC", &CPU6502::bcc, &CPU6502::rel };
+
+    m_InstructionMap[OPCODE_BCS_REL] = { "BCS", &CPU6502::bcs, &CPU6502::rel };
 }
 
 void CPU6502::process_instruction()
@@ -306,6 +308,21 @@ void CPU6502::asl_acc(uint16_t data_addr)
 void CPU6502::bcc(uint16_t data_addr)
 {
     if (registers.p.carry_bit_set()) {
+        return;
+    }
+
+    uint8_t data = memory.read_byte(data_addr);
+    if (is_positive(data)) {
+        registers.pc += data;
+    } else {
+        data = twos_compliment_flip(data);
+        registers.pc -= data;
+    }
+}
+
+void CPU6502::bcs(uint16_t data_addr)
+{
+    if (!registers.p.carry_bit_set()) {
         return;
     }
 
