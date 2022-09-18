@@ -17,7 +17,8 @@ SET(TEST_FILES lda_tests.cpp
                asl_tests.cpp
                bcc_tests.cpp
                bcs_tests.cpp
-               beq_tests.cpp)
+               beq_tests.cpp
+               bne_tests.cpp)
 SET(NES_FILES ${CMAKE_SOURCE_DIR}/src/cpu.cpp
               ${CMAKE_SOURCE_DIR}/src/memory.cpp)
 

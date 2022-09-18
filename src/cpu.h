@@ -91,6 +91,7 @@ public:
     void bcc(uint16_t data_addr);
     void bcs(uint16_t data_addr);
     void beq(uint16_t data_addr);
+    void bne(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
