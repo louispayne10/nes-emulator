@@ -81,51 +81,50 @@ void CPU6502::process_instruction()
         NOT_IMPLEMENTED();
     }
 
-    auto op            = handler_it->second.operation_fn;
-    auto addr          = handler_it->second.addressing_fn;
-    const uint8_t data = (this->*addr)();
-    (this->*op)(data);
+    auto op                  = handler_it->second.operation_fn;
+    auto addr                = handler_it->second.addressing_fn;
+    const uint16_t data_addr = addr ? (this->*addr)() : 0;
+    (this->*op)(data_addr);
 }
 
-uint8_t CPU6502::imm()
+uint16_t CPU6502::imm()
+{
+    return registers.pc++;
+}
+
+uint16_t CPU6502::zp()
 {
     return memory.read_byte(registers.pc++);
 }
 
-uint8_t CPU6502::zp()
-{
-    const uint8_t byte_addr = memory.read_byte(registers.pc++);
-    return memory.read_byte(byte_addr);
-}
-
-uint8_t CPU6502::zpx()
+uint16_t CPU6502::zpx()
 {
     const uint8_t instruction_offset = memory.read_byte(registers.pc++);
     const uint8_t x                  = registers.x;
 
     // Let this addition wrap on overflow as the NES did
     const uint8_t byte_addr = instruction_offset + x;
-    return memory.read_byte(byte_addr);
+    return byte_addr;
 }
 
-uint8_t CPU6502::zpy()
+uint16_t CPU6502::zpy()
 {
     const uint8_t operand = memory.read_byte(registers.pc++);
     const uint8_t y       = registers.y;
 
     // Let this addition wrap on overflow as the NES did
     const uint8_t byte_addr = operand + y;
-    return memory.read_byte(byte_addr);
+    return byte_addr;
 }
 
-uint8_t CPU6502::abs()
+uint16_t CPU6502::abs()
 {
     const uint16_t instruction_offset = memory.read_word(registers.pc);
     registers.pc += 2;
-    return memory.read_byte(instruction_offset);
+    return instruction_offset;
 }
 
-uint8_t CPU6502::absx()
+uint16_t CPU6502::absx()
 {
     const uint16_t instruction_offset = memory.read_word(registers.pc);
     const uint8_t x                   = registers.x;
@@ -134,10 +133,10 @@ uint8_t CPU6502::absx()
 
     // Let it wrap on overflow - think that's correct behaviour
     const uint16_t byte_addr = instruction_offset + (uint16_t)x;
-    return memory.read_byte(byte_addr);
+    return byte_addr;
 }
 
-uint8_t CPU6502::absy()
+uint16_t CPU6502::absy()
 {
     const uint16_t instruction_offset = memory.read_word(registers.pc);
     const uint8_t y                   = registers.y;
@@ -146,10 +145,10 @@ uint8_t CPU6502::absy()
 
     // Let it wrap on overflow - think that's correct behaviour
     const uint16_t byte_addr = instruction_offset + (uint16_t)y;
-    return memory.read_byte(byte_addr);
+    return byte_addr;
 }
 
-uint8_t CPU6502::indx()
+uint16_t CPU6502::indx()
 {
     const uint8_t operand = memory.read_byte(registers.pc++);
     const uint8_t x       = registers.x;
@@ -158,21 +157,22 @@ uint8_t CPU6502::indx()
     const uint8_t lsb         = memory.read_byte(lsb_addr);
     const uint8_t msb         = memory.read_byte(lsb_addr + 1);
     const uint16_t final_addr = (uint16_t)((msb << 8) | lsb);
-    return memory.read_byte(final_addr);
+    return final_addr;
 }
 
-uint8_t CPU6502::indy()
+uint16_t CPU6502::indy()
 {
     const uint8_t operand            = memory.read_byte(registers.pc++);
     const uint8_t lsb                = memory.read_byte(operand);
     const uint8_t msb                = memory.read_byte(operand + 1);
     const uint16_t intermediate_addr = (uint16_t)((msb << 8) | lsb);
     const uint16_t final_addr        = intermediate_addr + registers.y;
-    return memory.read_byte(final_addr);
+    return final_addr;
 }
 
-void CPU6502::lda(uint8_t data)
+void CPU6502::lda(uint16_t data_addr)
 {
+    const uint8_t data = memory.read_byte(data_addr);
     if (data == 0) {
         registers.p.set_zero_flag();
     }
@@ -182,8 +182,9 @@ void CPU6502::lda(uint8_t data)
     registers.a = data;
 }
 
-void CPU6502::ldx(uint8_t data)
+void CPU6502::ldx(uint16_t data_addr)
 {
+    const uint8_t data = memory.read_byte(data_addr);
     if (data == 0) {
         registers.p.set_zero_flag();
     }
@@ -193,8 +194,9 @@ void CPU6502::ldx(uint8_t data)
     registers.x = data;
 }
 
-void CPU6502::ldy(uint8_t data)
+void CPU6502::ldy(uint16_t data_addr)
 {
+    const uint8_t data = memory.read_byte(data_addr);
     if (data == 0) {
         registers.p.set_zero_flag();
     }
@@ -204,8 +206,9 @@ void CPU6502::ldy(uint8_t data)
     registers.y = data;
 }
 
-void CPU6502::adc(uint8_t data)
+void CPU6502::adc(uint16_t data_addr)
 {
+    const uint8_t data = memory.read_byte(data_addr);
     const uint16_t res = registers.a + data + registers.p.carry_bit_set();
     if (res == 0) {
         registers.p.set_zero_flag();
@@ -226,8 +229,9 @@ void CPU6502::adc(uint8_t data)
     registers.a = res & 0xFF;
 }
 
-void CPU6502::and_op(uint8_t data)
+void CPU6502::and_op(uint16_t data_addr)
 {
+    const uint8_t data = memory.read_byte(data_addr);
     registers.a &= data;
     if (registers.a == 0) {
         registers.p.set_zero_flag();

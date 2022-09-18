@@ -67,26 +67,26 @@ public:
     void process_instruction();
 
     // addressing modes
-    uint8_t imm();
-    uint8_t zp();
-    uint8_t zpx();
-    uint8_t zpy();
-    uint8_t abs();
-    uint8_t absx();
-    uint8_t absy();
-    uint8_t indx();
-    uint8_t indy();
+    uint16_t imm();
+    uint16_t zp();
+    uint16_t zpx();
+    uint16_t zpy();
+    uint16_t abs();
+    uint16_t absx();
+    uint16_t absy();
+    uint16_t indx();
+    uint16_t indy();
 
     // generic instructions
-    void lda(uint8_t data);
-    void ldx(uint8_t data);
-    void ldy(uint8_t data);
-    void adc(uint8_t data);
-    void and_op(uint8_t data); // can't just name this function 'and' as that is a c++ keyword
+    void lda(uint16_t data_addr);
+    void ldx(uint16_t data_data);
+    void ldy(uint16_t data_data);
+    void adc(uint16_t data_data);
+    void and_op(uint16_t data_addr); // can't just name this function 'and' as that is a c++ keyword
 
     // TODO: Move this to a lookup table once we can
-    using operation_fn_t  = void (CPU6502::*)(uint8_t);
-    using addressing_fn_t = uint8_t (CPU6502::*)();
+    using operation_fn_t  = void (CPU6502::*)(uint16_t);
+    using addressing_fn_t = uint16_t (CPU6502::*)();
     struct Instruction
     {
         std::string name;
