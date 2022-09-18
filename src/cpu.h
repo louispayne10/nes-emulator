@@ -21,7 +21,9 @@ enum class StatusRegFlag : uint8_t {
     Negative   = (1 << 7)
 };
 StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b);
+StatusRegFlag& operator&=(StatusRegFlag& a, StatusRegFlag b);
 bool operator&(StatusRegFlag a, StatusRegFlag b);
+StatusRegFlag operator~(StatusRegFlag a);
 
 struct StatusRegister
 {
@@ -34,6 +36,7 @@ struct StatusRegister
     bool negative_flag_set() const { return reg & StatusRegFlag::Negative; }
 
     void set_carry_bit() { reg |= StatusRegFlag::Carry; }
+    void clear_carry_bit() { reg &= ~StatusRegFlag::Carry; }
     bool carry_bit_set() const { return reg & StatusRegFlag::Carry; }
 
     void set_overflow_bit() { reg |= StatusRegFlag::Overflow; }
@@ -83,6 +86,11 @@ public:
     void ldy(uint16_t data_data);
     void adc(uint16_t data_data);
     void and_op(uint16_t data_addr); // can't just name this function 'and' as that is a c++ keyword
+    void asl(uint16_t data_addr);
+
+    // specific instruction
+    void asl_acc(uint16_t data_addr);
+    uint8_t asl_impl(uint8_t data);
 
     // TODO: Move this to a lookup table once we can
     using operation_fn_t  = void (CPU6502::*)(uint16_t);

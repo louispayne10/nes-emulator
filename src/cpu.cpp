@@ -21,9 +21,20 @@ StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b)
     return a;
 }
 
+StatusRegFlag& operator&=(StatusRegFlag& a, StatusRegFlag b)
+{
+    a = (StatusRegFlag)((uint8_t)a | (uint8_t)b);
+    return a;
+}
+
 bool operator&(StatusRegFlag a, StatusRegFlag b)
 {
     return (uint8_t)a & (uint8_t)b;
+}
+
+StatusRegFlag operator~(StatusRegFlag a)
+{
+    return (StatusRegFlag)(~(uint8_t)a);
 }
 
 bool operator==(StatusRegister lhs, StatusRegister rhs)
@@ -71,6 +82,12 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_AND_ABSY] = { "AND", &CPU6502::and_op, &CPU6502::absy };
     m_InstructionMap[OPCODE_AND_INDX] = { "AND", &CPU6502::and_op, &CPU6502::indx };
     m_InstructionMap[OPCODE_AND_INDY] = { "AND", &CPU6502::and_op, &CPU6502::indy };
+
+    m_InstructionMap[OPCODE_ASL_ACC]  = { "ASL", &CPU6502::asl_acc, nullptr };
+    m_InstructionMap[OPCODE_ASL_ZP]   = { "ASL", &CPU6502::asl, &CPU6502::zp };
+    m_InstructionMap[OPCODE_ASL_ZPX]  = { "ASL", &CPU6502::asl, &CPU6502::zpx };
+    m_InstructionMap[OPCODE_ASL_ABS]  = { "ASL", &CPU6502::asl, &CPU6502::abs };
+    m_InstructionMap[OPCODE_ASL_ABSX] = { "ASL", &CPU6502::asl, &CPU6502::absx };
 }
 
 void CPU6502::process_instruction()
@@ -239,4 +256,36 @@ void CPU6502::and_op(uint16_t data_addr)
     if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
+}
+
+uint8_t CPU6502::asl_impl(uint8_t data)
+{
+    if (is_negative(data)) {
+        registers.p.set_carry_bit();
+    } else {
+        registers.p.clear_carry_bit();
+    }
+
+    data <<= 1;
+    if (data == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(data)) {
+        registers.p.set_negative_flag();
+    }
+
+    return data;
+}
+
+void CPU6502::asl(uint16_t data_addr)
+{
+    uint8_t data = memory.read_byte(data_addr);
+    data         = asl_impl(data);
+    memory.write_byte(data_addr, data);
+}
+
+void CPU6502::asl_acc(uint16_t data_addr)
+{
+    (void)data_addr; // this instruction operates directly on the accumulator
+    registers.a = asl_impl(registers.a);
 }
