@@ -98,6 +98,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_BCC_REL] = { "BCC", &CPU6502::bcc, &CPU6502::rel };
 
     m_InstructionMap[OPCODE_BCS_REL] = { "BCS", &CPU6502::bcs, &CPU6502::rel };
+
+    m_InstructionMap[OPCODE_BEQ_REL] = { "BEQ", &CPU6502::beq, &CPU6502::rel };
 }
 
 void CPU6502::process_instruction()
@@ -333,5 +335,12 @@ void CPU6502::bcs(uint16_t data_addr)
 
     displace_pc_from_data_addr(data_addr);
 }
+
+void CPU6502::beq(uint16_t data_addr)
+{
+    if (!registers.p.zero_flag_set()) {
+        return;
     }
+
+    displace_pc_from_data_addr(data_addr);
 }
