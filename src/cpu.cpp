@@ -4,7 +4,16 @@
 #include "opcodes.h"
 #include <utility>
 
-static constexpr uint8_t BIT_7 = (1 << 7);
+static bool is_negative(uint8_t data)
+{
+    constexpr uint8_t BIT_7 = (1 << 7);
+    return data & BIT_7;
+}
+
+static bool is_positive(uint8_t data)
+{
+    return !is_negative(data);
+}
 
 StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b)
 {
@@ -158,7 +167,7 @@ void CPU6502::lda(uint8_t data)
     if (data == 0) {
         registers.p.set_zero_flag();
     }
-    if (data & BIT_7) {
+    if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
     registers.a = data;
@@ -169,7 +178,7 @@ void CPU6502::ldx(uint8_t data)
     if (data == 0) {
         registers.p.set_zero_flag();
     }
-    if (data & BIT_7) {
+    if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
     registers.x = data;
@@ -180,7 +189,7 @@ void CPU6502::ldy(uint8_t data)
     if (data == 0) {
         registers.p.set_zero_flag();
     }
-    if (data & BIT_7) {
+    if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
     registers.y = data;
@@ -192,18 +201,16 @@ void CPU6502::adc(uint8_t data)
     if (res == 0) {
         registers.p.set_zero_flag();
     }
-    if (res & BIT_7) {
+    if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
     if (res & 0xFF00) {
         registers.p.set_carry_bit();
     }
-    if (!(registers.a & BIT_7) && !(data & BIT_7) && (res & BIT_7)) {
-        // In this case two positive numbers added to a negative number
+    if (is_positive(registers.a) && is_positive(data) && is_negative(res)) {
         registers.p.set_overflow_bit();
     }
-    if ((registers.a & BIT_7) && (data & BIT_7) && !(res & BIT_7)) {
-        // In this case two negative numbers added to a positive number
+    if (is_negative(registers.a) && is_negative(data) && is_positive(res)) {
         registers.p.set_overflow_bit();
     }
 
