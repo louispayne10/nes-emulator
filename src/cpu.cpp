@@ -305,12 +305,8 @@ void CPU6502::asl_acc(uint16_t data_addr)
     registers.a = asl_impl(registers.a);
 }
 
-void CPU6502::bcc(uint16_t data_addr)
+void CPU6502::displace_pc_from_data_addr(uint16_t data_addr)
 {
-    if (registers.p.carry_bit_set()) {
-        return;
-    }
-
     uint8_t data = memory.read_byte(data_addr);
     if (is_positive(data)) {
         registers.pc += data;
@@ -320,17 +316,22 @@ void CPU6502::bcc(uint16_t data_addr)
     }
 }
 
+void CPU6502::bcc(uint16_t data_addr)
+{
+    if (registers.p.carry_bit_set()) {
+        return;
+    }
+
+    displace_pc_from_data_addr(data_addr);
+}
+
 void CPU6502::bcs(uint16_t data_addr)
 {
     if (!registers.p.carry_bit_set()) {
         return;
     }
 
-    uint8_t data = memory.read_byte(data_addr);
-    if (is_positive(data)) {
-        registers.pc += data;
-    } else {
-        data = twos_compliment_flip(data);
-        registers.pc -= data;
+    displace_pc_from_data_addr(data_addr);
+}
     }
 }

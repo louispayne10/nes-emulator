@@ -91,9 +91,10 @@ public:
     void bcc(uint16_t data_addr);
     void bcs(uint16_t data_addr);
 
-    // specific instruction
+    // helpers
     void asl_acc(uint16_t data_addr);
     uint8_t asl_impl(uint8_t data);
+    void displace_pc_from_data_addr(uint16_t data_addr);
 
     // TODO: Move this to a lookup table once we can
     using operation_fn_t  = void (CPU6502::*)(uint16_t);
