@@ -82,6 +82,7 @@ public:
     void ldx(uint8_t data);
     void ldy(uint8_t data);
     void adc(uint8_t data);
+    void and_op(uint8_t data); // can't just name this function 'and' as that is a c++ keyword
 
     // TODO: Move this to a lookup table once we can
     using operation_fn_t  = void (CPU6502::*)(uint8_t);

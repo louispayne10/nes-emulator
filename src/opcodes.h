@@ -3,6 +3,14 @@
 #include <cstdint>
 
 enum OPCODE {
+    OPCODE_AND_INDX = 0x21,
+    OPCODE_AND_ZP   = 0x25,
+    OPCODE_AND_IMM  = 0x29,
+    OPCODE_AND_ABS  = 0x2D,
+    OPCODE_AND_INDY = 0x31,
+    OPCODE_AND_ZPX  = 0x35,
+    OPCODE_AND_ABSX = 0x3D,
+    OPCODE_AND_ABSY = 0x39,
     OPCODE_ADC_INDX = 0x61,
     OPCODE_ADC_ZP   = 0x65,
     OPCODE_ADC_IMM  = 0x69,

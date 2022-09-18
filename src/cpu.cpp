@@ -62,6 +62,15 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_ADC_ABSY] = { "ADC", &CPU6502::adc, &CPU6502::absy };
     m_InstructionMap[OPCODE_ADC_INDX] = { "ADC", &CPU6502::adc, &CPU6502::indx };
     m_InstructionMap[OPCODE_ADC_INDY] = { "ADC", &CPU6502::adc, &CPU6502::indy };
+
+    m_InstructionMap[OPCODE_AND_IMM]  = { "AND", &CPU6502::and_op, &CPU6502::imm };
+    m_InstructionMap[OPCODE_AND_ZP]   = { "AND", &CPU6502::and_op, &CPU6502::zp };
+    m_InstructionMap[OPCODE_AND_ZPX]  = { "AND", &CPU6502::and_op, &CPU6502::zpx };
+    m_InstructionMap[OPCODE_AND_ABS]  = { "AND", &CPU6502::and_op, &CPU6502::abs };
+    m_InstructionMap[OPCODE_AND_ABSX] = { "AND", &CPU6502::and_op, &CPU6502::absx };
+    m_InstructionMap[OPCODE_AND_ABSY] = { "AND", &CPU6502::and_op, &CPU6502::absy };
+    m_InstructionMap[OPCODE_AND_INDX] = { "AND", &CPU6502::and_op, &CPU6502::indx };
+    m_InstructionMap[OPCODE_AND_INDY] = { "AND", &CPU6502::and_op, &CPU6502::indy };
 }
 
 void CPU6502::process_instruction()
@@ -215,4 +224,15 @@ void CPU6502::adc(uint8_t data)
     }
 
     registers.a = res & 0xFF;
+}
+
+void CPU6502::and_op(uint8_t data)
+{
+    registers.a &= data;
+    if (registers.a == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(registers.a)) {
+        registers.p.set_negative_flag();
+    }
 }
