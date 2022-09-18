@@ -79,6 +79,7 @@ public:
     uint16_t absy();
     uint16_t indx();
     uint16_t indy();
+    uint16_t rel();
 
     // generic instructions
     void lda(uint16_t data_addr);
@@ -87,6 +88,7 @@ public:
     void adc(uint16_t data_data);
     void and_op(uint16_t data_addr); // can't just name this function 'and' as that is a c++ keyword
     void asl(uint16_t data_addr);
+    void bcc(uint16_t data_addr);
 
     // specific instruction
     void asl_acc(uint16_t data_addr);

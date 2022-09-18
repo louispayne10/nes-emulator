@@ -15,6 +15,12 @@ static bool is_positive(uint8_t data)
     return !is_negative(data);
 }
 
+// takes a positive/negative number and converts it to the same magnitude but opposite sign in twos compliment
+static uint8_t twos_compliment_flip(uint8_t data)
+{
+    return ~data + 1;
+}
+
 StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b)
 {
     a = (StatusRegFlag)((uint8_t)a | (uint8_t)b);
@@ -88,6 +94,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_ASL_ZPX]  = { "ASL", &CPU6502::asl, &CPU6502::zpx };
     m_InstructionMap[OPCODE_ASL_ABS]  = { "ASL", &CPU6502::asl, &CPU6502::abs };
     m_InstructionMap[OPCODE_ASL_ABSX] = { "ASL", &CPU6502::asl, &CPU6502::absx };
+
+    m_InstructionMap[OPCODE_BCC_REL] = { "BCC", &CPU6502::bcc, &CPU6502::rel };
 }
 
 void CPU6502::process_instruction()
@@ -185,6 +193,11 @@ uint16_t CPU6502::indy()
     const uint16_t intermediate_addr = (uint16_t)((msb << 8) | lsb);
     const uint16_t final_addr        = intermediate_addr + registers.y;
     return final_addr;
+}
+
+uint16_t CPU6502::rel()
+{
+    return registers.pc++;
 }
 
 void CPU6502::lda(uint16_t data_addr)
@@ -288,4 +301,19 @@ void CPU6502::asl_acc(uint16_t data_addr)
 {
     (void)data_addr; // this instruction operates directly on the accumulator
     registers.a = asl_impl(registers.a);
+}
+
+void CPU6502::bcc(uint16_t data_addr)
+{
+    if (registers.p.carry_bit_set()) {
+        return;
+    }
+
+    uint8_t data = memory.read_byte(data_addr);
+    if (is_positive(data)) {
+        registers.pc += data;
+    } else {
+        data = twos_compliment_flip(data);
+        registers.pc -= data;
+    }
 }
