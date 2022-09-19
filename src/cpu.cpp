@@ -4,9 +4,11 @@
 #include "opcodes.h"
 #include <utility>
 
+static constexpr uint8_t BIT_6 = (1 << 6);
+static constexpr uint8_t BIT_7 = (1 << 7);
+
 static bool is_negative(uint8_t data)
 {
-    constexpr uint8_t BIT_7 = (1 << 7);
     return data & BIT_7;
 }
 
@@ -29,7 +31,7 @@ StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b)
 
 StatusRegFlag& operator&=(StatusRegFlag& a, StatusRegFlag b)
 {
-    a = (StatusRegFlag)((uint8_t)a | (uint8_t)b);
+    a = (StatusRegFlag)((uint8_t)a & (uint8_t)b);
     return a;
 }
 
@@ -102,6 +104,9 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_BEQ_REL] = { "BEQ", &CPU6502::beq, &CPU6502::rel };
 
     m_InstructionMap[OPCODE_BNE_REL] = { "BNE", &CPU6502::bne, &CPU6502::rel };
+
+    m_InstructionMap[OPCODE_BIT_ZP]  = { "BIT", &CPU6502::bit, &CPU6502::zp };
+    m_InstructionMap[OPCODE_BIT_ABS] = { "BIT", &CPU6502::bit, &CPU6502::abs };
 }
 
 void CPU6502::process_instruction()
@@ -282,7 +287,7 @@ uint8_t CPU6502::asl_impl(uint8_t data)
     if (is_negative(data)) {
         registers.p.set_carry_bit();
     } else {
-        registers.p.clear_carry_bit();
+        registers.p.clear_carry_flag();
     }
 
     data <<= 1;
@@ -354,4 +359,24 @@ void CPU6502::bne(uint16_t data_addr)
     }
 
     displace_pc_from_data_addr(data_addr);
+}
+
+void CPU6502::bit(uint16_t data_addr)
+{
+    const uint8_t data   = memory.read_byte(data_addr);
+    const uint8_t result = data & registers.a;
+    if (result) {
+        registers.p.clear_zero_flag();
+    } else {
+        registers.p.set_zero_flag();
+    }
+
+    if (data & BIT_7)
+        registers.p.set_negative_flag();
+    else
+        registers.p.clear_negative_flag();
+    if (data & BIT_6)
+        registers.p.set_overflow_bit();
+    else
+        registers.p.clear_overflow_flag();
 }

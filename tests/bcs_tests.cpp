@@ -31,7 +31,7 @@ TEST_CASE("bcs rel", "[bcs],[cpu],[rel],[instruction]")
     SECTION("carry clear bcs")
     {
         cpu.memory.write_byte(1, 1);
-        cpu.registers.p.clear_carry_bit();
+        cpu.registers.p.clear_carry_flag();
         cpu.process_instruction();
 
         REQUIRE(cpu.registers.pc == 2);

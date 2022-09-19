@@ -11,7 +11,7 @@ TEST_CASE("bcc rel", "[bcc],[cpu],[rel],[instruction]")
     SECTION("carry clear positive branch bcc")
     {
         cpu.memory.write_byte(1, 0x20);
-        cpu.registers.p.clear_carry_bit();
+        cpu.registers.p.clear_carry_flag();
         cpu.process_instruction();
 
         REQUIRE(cpu.registers.pc == 0x22);
@@ -22,7 +22,7 @@ TEST_CASE("bcc rel", "[bcc],[cpu],[rel],[instruction]")
         cpu.memory.write_byte(10, OPCODE_BCC_REL);
         cpu.registers.pc = 10;
         cpu.memory.write_byte(11, 0b1111'1100); // -4
-        cpu.registers.p.clear_carry_bit();
+        cpu.registers.p.clear_carry_flag();
         cpu.process_instruction();
 
         REQUIRE(cpu.registers.pc == 8);

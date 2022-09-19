@@ -30,16 +30,19 @@ struct StatusRegister
     StatusRegFlag reg;
 
     void set_zero_flag() { reg |= StatusRegFlag::Zero; }
+    void clear_zero_flag() { reg &= ~StatusRegFlag::Zero; }
     bool zero_flag_set() const { return reg & StatusRegFlag::Zero; }
 
     void set_negative_flag() { reg |= StatusRegFlag::Negative; }
+    void clear_negative_flag() { reg &= ~StatusRegFlag::Negative; }
     bool negative_flag_set() const { return reg & StatusRegFlag::Negative; }
 
     void set_carry_bit() { reg |= StatusRegFlag::Carry; }
-    void clear_carry_bit() { reg &= ~StatusRegFlag::Carry; }
+    void clear_carry_flag() { reg &= ~StatusRegFlag::Carry; }
     bool carry_bit_set() const { return reg & StatusRegFlag::Carry; }
 
     void set_overflow_bit() { reg |= StatusRegFlag::Overflow; }
+    void clear_overflow_flag() { reg &= ~StatusRegFlag::Overflow; }
     bool overflow_flag_set() const { return reg & StatusRegFlag::Overflow; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
@@ -92,6 +95,7 @@ public:
     void bcs(uint16_t data_addr);
     void beq(uint16_t data_addr);
     void bne(uint16_t data_addr);
+    void bit(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
