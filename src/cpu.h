@@ -6,11 +6,6 @@
 #include <string>
 #include <unordered_map>
 
-struct Clock
-{
-    uint64_t cycle_count;
-};
-
 enum class StatusRegFlag : uint8_t {
     Carry      = (1 << 0),
     Zero       = (1 << 1),
@@ -57,11 +52,7 @@ struct CpuRegisters
     StatusRegister p; // the status register
 };
 
-/* TODO: execute the instruction AFTER the cycles to complete it are over
- * this will be a slightly more accurate emulation
- * Of course real 6502 CPUs will have some kind of microcode going on
- * during those cycles but we'll just wait
- */
+// TODO: implement extra cycle for page boundary being crossed
 class CPU6502
 {
 public:
@@ -70,7 +61,9 @@ public:
     CpuRegisters registers = {};
     Memory memory;
 
-    void process_instruction();
+    void next_cycle();
+    uint8_t cycles_remaining = 0;
+    uint8_t process_instruction();
 
     // addressing modes
     uint16_t imm();
@@ -110,6 +103,7 @@ public:
         std::string name;
         operation_fn_t operation_fn;
         addressing_fn_t addressing_fn;
+        uint8_t cycles;
     };
     std::unordered_map<uint8_t, Instruction> m_InstructionMap;
 };
