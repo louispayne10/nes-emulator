@@ -244,3 +244,27 @@ TEST_CASE("iny imp", "[iny],[cpu],[imp],[instruction]")
         REQUIRE(cpu.registers.y == 43);
     }
 }
+
+TEST_CASE("lsr acc", "[lsr],[cpu],[acc],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_LSR_ACC);
+
+    cpu.registers.a = 0b1010'1010;
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.a == 0b0101'0101);
+}
+
+TEST_CASE("lsr zp", "[lsr],[cpu],[acc],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_LSR_ZP);
+
+    cpu.memory.write_byte(1, 0x20);
+    cpu.memory.write_byte(0x20, 0b0101'0101);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.memory.read_byte(0x20) == 0b0010'1010);
+    REQUIRE(cpu.registers.p.carry_bit_set());
+}

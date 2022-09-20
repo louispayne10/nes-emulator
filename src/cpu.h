@@ -116,10 +116,12 @@ public:
     void iny(uint16_t data_addr);
     void jmp(uint16_t data_addr);
     void jsr(uint16_t data_addr);
+    void lsr(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
     uint8_t asl_impl(uint8_t data);
+    void lsr_acc(uint16_t data_addr);
     void displace_pc_from_data_addr(uint16_t data_addr);
     void push_stack(uint8_t data);
 

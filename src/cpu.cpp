@@ -168,6 +168,12 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_JMP_ABS] = { "JMP", &CPU6502::jmp, &CPU6502::abs, 3 };
     m_InstructionMap[OPCODE_JMP_IND] = { "JMP", &CPU6502::jmp, &CPU6502::ind, 5 };
     m_InstructionMap[OPCODE_JSR_ABS] = { "JSR", &CPU6502::jsr, &CPU6502::abs, 6 };
+
+    m_InstructionMap[OPCODE_LSR_ACC]  = { "LSR", &CPU6502::lsr_acc, nullptr, 2 };
+    m_InstructionMap[OPCODE_LSR_ZP]   = { "LSR", &CPU6502::lsr, &CPU6502::zp, 5 };
+    m_InstructionMap[OPCODE_LSR_ZPX]  = { "LSR", &CPU6502::lsr, &CPU6502::zpx, 6 };
+    m_InstructionMap[OPCODE_LSR_ABS]  = { "LSR", &CPU6502::lsr, &CPU6502::abs, 6 };
+    m_InstructionMap[OPCODE_LSR_ABSX] = { "LSR", &CPU6502::lsr, &CPU6502::absx, 7 };
 }
 
 void CPU6502::next_cycle()
@@ -676,4 +682,25 @@ void CPU6502::jsr(uint16_t data_addr)
 {
     push_stack(registers.pc - 1);
     registers.pc = memory.read_byte(data_addr);
+}
+
+void CPU6502::lsr(uint16_t data_addr)
+{
+    uint8_t data        = memory.read_byte(data_addr);
+    const uint8_t carry = data & 1;
+    data >>= 1;
+    memory.write_byte(data_addr, data);
+    if (carry) {
+        registers.p.set_carry_bit();
+    }
+}
+
+void CPU6502::lsr_acc(uint16_t data_addr)
+{
+    (void)data_addr;
+    const uint8_t carry = registers.a & 1;
+    registers.a >>= 1;
+    if (carry) {
+        registers.p.set_carry_bit();
+    }
 }
