@@ -9,6 +9,7 @@ enum OPCODE {
     OPCODE_ASL_ABS  = 0x0E,
     OPCODE_BPL_REL  = 0x10,
     OPCODE_ASL_ZPX  = 0x16,
+    OPCODE_CLC_IMP  = 0x18,
     OPCODE_ASL_ABSX = 0x1E,
     OPCODE_AND_INDX = 0x21,
     OPCODE_BIT_ZP   = 0x24,
