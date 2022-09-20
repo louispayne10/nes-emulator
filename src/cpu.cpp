@@ -131,6 +131,10 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_CMP_ABSY] = { "CMP", &CPU6502::cmp, &CPU6502::absy, 4 };
     m_InstructionMap[OPCODE_CMP_INDX] = { "CMP", &CPU6502::cmp, &CPU6502::indx, 6 };
     m_InstructionMap[OPCODE_CMP_INDY] = { "CMP", &CPU6502::cmp, &CPU6502::indy, 5 };
+
+    m_InstructionMap[OPCODE_CPX_IMM] = { "CPX", &CPU6502::cpx, &CPU6502::imm, 2 };
+    m_InstructionMap[OPCODE_CPX_ZP]  = { "CPX", &CPU6502::cpx, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_CPX_ABS] = { "CPX", &CPU6502::cpx, &CPU6502::abs, 4 };
 }
 
 void CPU6502::next_cycle()
@@ -488,6 +492,26 @@ void CPU6502::cmp(uint16_t data_addr)
 
     // TODO: validate that this is the correct behaviour
     if (is_negative(registers.a - data)) {
+        registers.p.set_negative_flag();
+    }
+}
+
+void CPU6502::cpx(uint16_t data_addr)
+{
+    const uint8_t data = memory.read_byte(data_addr);
+    if (registers.x >= data) {
+        registers.p.set_carry_bit();
+    } else {
+        registers.p.clear_carry_flag();
+    }
+    if (registers.x == data) {
+        registers.p.set_zero_flag();
+    } else {
+        registers.p.clear_zero_flag();
+    }
+
+    // TODO: validate that this is the correct behaviour
+    if (is_negative(registers.x - data)) {
         registers.p.set_negative_flag();
     }
 }

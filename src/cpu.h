@@ -104,6 +104,7 @@ public:
     void cli(uint16_t data_addr);
     void clv(uint16_t data_addr);
     void cmp(uint16_t data_addr);
+    void cpx(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

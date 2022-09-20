@@ -84,3 +84,37 @@ TEST_CASE("bit zp", "[bit],[cpu],[zp],[instruction]")
         REQUIRE(cpu.registers.p.negative_flag_set());
     }
 }
+
+TEST_CASE("cpx imm", "[cpx],[cpu],[imm],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_CPX_IMM);
+    cpu.registers.x = 0x80;
+
+    SECTION("greater than cpx")
+    {
+        cpu.memory.write_byte(1, 0x50);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.p.carry_bit_set());
+        REQUIRE(!cpu.registers.p.zero_flag_set());
+    }
+
+    SECTION("equal to cpx")
+    {
+        cpu.memory.write_byte(1, 0x80);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.p.carry_bit_set());
+        REQUIRE(cpu.registers.p.zero_flag_set());
+    }
+
+    SECTION("less than cpx")
+    {
+        cpu.memory.write_byte(1, 0x90);
+        cpu.process_instruction();
+
+        REQUIRE(!cpu.registers.p.carry_bit_set());
+        REQUIRE(!cpu.registers.p.zero_flag_set());
+    }
+}

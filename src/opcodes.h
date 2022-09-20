@@ -64,5 +64,8 @@ enum OPCODE {
     OPCODE_CLD_IMP  = 0xD8,
     OPCODE_CMP_ABSY = 0xD9,
     OPCODE_CMP_ABSX = 0xDD,
+    OPCODE_CPX_IMM  = 0xE0,
+    OPCODE_CPX_ZP   = 0xE4,
+    OPCODE_CPX_ABS  = 0xEC,
     OPCODE_BEQ_REL  = 0xF0
 };
