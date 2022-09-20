@@ -2,6 +2,7 @@
 
 #include "log.h"
 #include "opcodes.h"
+#include <cstdint>
 #include <utility>
 
 static constexpr uint8_t BIT_6 = (1 << 6);
@@ -147,6 +148,15 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_DEX_IMP] = { "DEX", &CPU6502::dex, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_DEY_IMP] = { "DEY", &CPU6502::dey, &CPU6502::imp, 2 };
+
+    m_InstructionMap[OPCODE_EOR_IMM]  = { "EOR", &CPU6502::eor, &CPU6502::imm, 2 };
+    m_InstructionMap[OPCODE_EOR_ZP]   = { "EOR", &CPU6502::eor, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_EOR_ZPX]  = { "EOR", &CPU6502::eor, &CPU6502::zpx, 4 };
+    m_InstructionMap[OPCODE_EOR_ABS]  = { "EOR", &CPU6502::eor, &CPU6502::abs, 4 };
+    m_InstructionMap[OPCODE_EOR_ABSX] = { "EOR", &CPU6502::eor, &CPU6502::indx, 4 };
+    m_InstructionMap[OPCODE_EOR_ABSY] = { "EOR", &CPU6502::eor, &CPU6502::absy, 4 };
+    m_InstructionMap[OPCODE_EOR_INDX] = { "EOR", &CPU6502::eor, &CPU6502::indx, 6 };
+    m_InstructionMap[OPCODE_EOR_INDY] = { "EOR", &CPU6502::eor, &CPU6502::indy, 5 };
 }
 
 void CPU6502::next_cycle()
@@ -581,6 +591,18 @@ void CPU6502::dey(uint16_t data_addr)
         registers.p.set_zero_flag();
     }
     if (is_negative(registers.y)) {
+        registers.p.set_negative_flag();
+    }
+}
+
+void CPU6502::eor(uint16_t data_addr)
+{
+    const uint8_t data = memory.read_byte(data_addr);
+    registers.a ^= data;
+    if (registers.a == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
 }

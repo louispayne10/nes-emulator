@@ -152,3 +152,18 @@ TEST_CASE("cpy imm", "[cpy],[cpu],[imm],[instruction]")
         REQUIRE(!cpu.registers.p.zero_flag_set());
     }
 }
+
+TEST_CASE("eor imm", "[eor],[cpu],[imm],[instrsuction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_EOR_IMM);
+
+    SECTION("non zero, non negative eor")
+    {
+        cpu.memory.write_byte(1, 0b0101'0101);
+        cpu.registers.a = 0b0000'1100;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 0b0101'1001);
+    }
+}
