@@ -118,3 +118,37 @@ TEST_CASE("cpx imm", "[cpx],[cpu],[imm],[instruction]")
         REQUIRE(!cpu.registers.p.zero_flag_set());
     }
 }
+
+TEST_CASE("cpy imm", "[cpy],[cpu],[imm],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_CPY_IMM);
+    cpu.registers.y = 0x80;
+
+    SECTION("greater than cpy")
+    {
+        cpu.memory.write_byte(1, 0x50);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.p.carry_bit_set());
+        REQUIRE(!cpu.registers.p.zero_flag_set());
+    }
+
+    SECTION("equal to cpy")
+    {
+        cpu.memory.write_byte(1, 0x80);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.p.carry_bit_set());
+        REQUIRE(cpu.registers.p.zero_flag_set());
+    }
+
+    SECTION("less than cpy")
+    {
+        cpu.memory.write_byte(1, 0x90);
+        cpu.process_instruction();
+
+        REQUIRE(!cpu.registers.p.carry_bit_set());
+        REQUIRE(!cpu.registers.p.zero_flag_set());
+    }
+}
