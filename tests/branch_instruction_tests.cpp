@@ -193,3 +193,16 @@ TEST_CASE("jmp ind", "[jmp],[cpu],[ind],[instruction]")
 
     REQUIRE(cpu.registers.pc == 42);
 }
+
+TEST_CASE("jsr abs", "[jsr],[cpu],[ind],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_JSR_ABS);
+
+    cpu.memory.write_word(1, 0x220);
+    cpu.memory.write_byte(0x220, 0x40);
+    cpu.process_instruction();
+
+    // TODO: add test that we actually pushed it onto the stack
+    REQUIRE(cpu.registers.pc == 0x40);
+}

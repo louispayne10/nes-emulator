@@ -167,6 +167,7 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_JMP_ABS] = { "JMP", &CPU6502::jmp, &CPU6502::abs, 3 };
     m_InstructionMap[OPCODE_JMP_IND] = { "JMP", &CPU6502::jmp, &CPU6502::ind, 5 };
+    m_InstructionMap[OPCODE_JSR_ABS] = { "JSR", &CPU6502::jsr, &CPU6502::abs, 6 };
 }
 
 void CPU6502::next_cycle()
@@ -192,6 +193,12 @@ uint8_t CPU6502::process_instruction()
     const uint16_t data_addr = addr ? (this->*addr)() : 0;
     (this->*op)(data_addr);
     return handler_it->second.cycles;
+}
+
+void CPU6502::push_stack(uint8_t data)
+{
+    memory.write_byte(registers.s + 0x100, data);
+    registers.s--;
 }
 
 uint16_t CPU6502::imm()
@@ -662,6 +669,11 @@ void CPU6502::iny(uint16_t data_addr)
 
 void CPU6502::jmp(uint16_t data_addr)
 {
-    const uint8_t data = memory.read_byte(data_addr);
-    registers.pc       = data;
+    registers.pc = memory.read_byte(data_addr);
+}
+
+void CPU6502::jsr(uint16_t data_addr)
+{
+    push_stack(registers.pc - 1);
+    registers.pc = memory.read_byte(data_addr);
 }
