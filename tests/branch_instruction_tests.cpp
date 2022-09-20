@@ -148,3 +148,18 @@ TEST_CASE("bpl rel", "[bpl],[cpu],[rel],[instruction]")
         REQUIRE(cpu.registers.pc == 22);
     }
 }
+
+TEST_CASE("bvc rel", "[bvc],[cpu],[rel],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_BVC_REL);
+
+    SECTION("branch bvc")
+    {
+        cpu.memory.write_byte(1, 20);
+        cpu.registers.p.clear_overflow_flag();
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.pc == 22);
+    }
+}
