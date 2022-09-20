@@ -68,6 +68,7 @@ enum OPCODE {
     OPCODE_CPY_ZP   = 0xC4,
     OPCODE_CMP_ZP   = 0xC5,
     OPCODE_DEC_ZP   = 0xC6,
+    OPCODE_INY_IMP  = 0xC8,
     OPCODE_CMP_IMM  = 0xC9,
     OPCODE_DEX_IMP  = 0xCA,
     OPCODE_CPY_ABS  = 0xCC,

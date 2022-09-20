@@ -230,3 +230,17 @@ TEST_CASE("inx imp", "[inx],[cpu],[imp],[instruction]")
         REQUIRE(cpu.registers.x == 43);
     }
 }
+
+TEST_CASE("iny imp", "[iny],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_INY_IMP);
+
+    SECTION("basic iny")
+    {
+        cpu.registers.y = 42;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.y == 43);
+    }
+}
