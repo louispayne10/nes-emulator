@@ -139,6 +139,11 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_CPY_IMM] = { "CPY", &CPU6502::cpy, &CPU6502::imm, 2 };
     m_InstructionMap[OPCODE_CPY_ZP]  = { "CPY", &CPU6502::cpy, &CPU6502::zp, 3 };
     m_InstructionMap[OPCODE_CPY_ABS] = { "CPY", &CPU6502::cpy, &CPU6502::abs, 4 };
+
+    m_InstructionMap[OPCODE_DEC_ZP]   = { "DEC", &CPU6502::dec, &CPU6502::zp, 5 };
+    m_InstructionMap[OPCODE_DEC_ZPX]  = { "DEC", &CPU6502::dec, &CPU6502::zpx, 6 };
+    m_InstructionMap[OPCODE_DEC_ABS]  = { "DEC", &CPU6502::dec, &CPU6502::abs, 6 };
+    m_InstructionMap[OPCODE_DEC_ABSX] = { "DEC", &CPU6502::dec, &CPU6502::absx, 7 };
 }
 
 void CPU6502::next_cycle()
@@ -536,6 +541,19 @@ void CPU6502::cpy(uint16_t data_addr)
 
     // TODO: validate that this is the correct behaviour
     if (is_negative(registers.y - data)) {
+        registers.p.set_negative_flag();
+    }
+}
+
+void CPU6502::dec(uint16_t data_addr)
+{
+    uint8_t data = memory.read_byte(data_addr) - 1;
+    memory.write_byte(data_addr, data);
+
+    if (data == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
 }

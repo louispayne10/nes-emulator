@@ -1,4 +1,3 @@
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "cpu.h"
@@ -131,5 +130,20 @@ TEST_CASE("asl abs", "[asl],[cpu],[abs],[instruction]")
 
         REQUIRE(cpu.memory.read_byte(0xB0) == 0b0001'0000);
         REQUIRE(cpu.registers.p.carry_bit_set());
+    }
+}
+
+TEST_CASE("dec zp", "[dec],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_DEC_ZP);
+
+    SECTION("decrement basic")
+    {
+        cpu.memory.write_byte(1, 0x20);
+        cpu.memory.write_byte(0x20, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.memory.read_byte(0x20) == 41);
     }
 }
