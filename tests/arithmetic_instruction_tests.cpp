@@ -191,3 +191,28 @@ TEST_CASE("dey imp", "[dey],[cpu],[imp],[instruction]")
         REQUIRE(cpu.registers.y == 0xFF);
     }
 }
+
+TEST_CASE("inc zp", "[inc],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_INC_ZP);
+
+    SECTION("non wrapping inc")
+    {
+        cpu.memory.write_byte(1, 0x20);
+        cpu.memory.write_byte(0x20, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.memory.read_byte(0x20) == 43);
+    }
+
+    SECTION("wrapping inc")
+    {
+        cpu.memory.write_byte(1, 0x20);
+        cpu.memory.write_byte(0x20, 0xFF);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.memory.read_byte(0x20) == 0);
+        REQUIRE(cpu.registers.p.zero_flag_set());
+    }
+}

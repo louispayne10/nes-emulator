@@ -157,6 +157,11 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_EOR_ABSY] = { "EOR", &CPU6502::eor, &CPU6502::absy, 4 };
     m_InstructionMap[OPCODE_EOR_INDX] = { "EOR", &CPU6502::eor, &CPU6502::indx, 6 };
     m_InstructionMap[OPCODE_EOR_INDY] = { "EOR", &CPU6502::eor, &CPU6502::indy, 5 };
+
+    m_InstructionMap[OPCODE_INC_ZP]   = { "INC", &CPU6502::inc, &CPU6502::zp, 5 };
+    m_InstructionMap[OPCODE_INC_ZPX]  = { "INC", &CPU6502::inc, &CPU6502::zpx, 6 };
+    m_InstructionMap[OPCODE_INC_ABS]  = { "INC", &CPU6502::inc, &CPU6502::abs, 6 };
+    m_InstructionMap[OPCODE_INC_ABSX] = { "INC", &CPU6502::inc, &CPU6502::absx, 7 };
 }
 
 void CPU6502::next_cycle()
@@ -603,6 +608,18 @@ void CPU6502::eor(uint16_t data_addr)
         registers.p.set_zero_flag();
     }
     if (is_negative(registers.a)) {
+        registers.p.set_negative_flag();
+    }
+}
+
+void CPU6502::inc(uint16_t data_addr)
+{
+    uint8_t data = memory.read_byte(data_addr) + 1;
+    memory.write_byte(data_addr, data);
+    if (data == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
 }
