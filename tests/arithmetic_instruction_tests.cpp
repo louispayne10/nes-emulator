@@ -216,3 +216,17 @@ TEST_CASE("inc zp", "[inc],[cpu],[zp],[instruction]")
         REQUIRE(cpu.registers.p.zero_flag_set());
     }
 }
+
+TEST_CASE("inx imp", "[inx],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_INX_IMP);
+
+    SECTION("basic inx")
+    {
+        cpu.registers.x = 42;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.x == 43);
+    }
+}
