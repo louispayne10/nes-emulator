@@ -39,6 +39,10 @@ struct StatusRegister
     void set_overflow_bit() { reg |= StatusRegFlag::Overflow; }
     void clear_overflow_flag() { reg &= ~StatusRegFlag::Overflow; }
     bool overflow_flag_set() const { return reg & StatusRegFlag::Overflow; }
+
+    void set_int_disable_flag() { reg |= StatusRegFlag::IntDisable; }
+    void clear_int_disable_flag() { reg &= ~StatusRegFlag::IntDisable; }
+    bool int_disable_flag_set() const { return reg & StatusRegFlag::IntDisable; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
 
@@ -97,6 +101,7 @@ public:
     void bvs(uint16_t data_addr);
     void clc(uint16_t data_addr);
     void cld(uint16_t data_addr);
+    void cli(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

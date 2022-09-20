@@ -12,3 +12,15 @@ TEST_CASE("clc imp", "[clc],[cpu],[imp],[instruction]")
 
     REQUIRE(!cpu.registers.p.carry_bit_set());
 }
+
+TEST_CASE("cli imp", "[cli],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.registers.p.set_int_disable_flag();
+    REQUIRE(cpu.registers.p.int_disable_flag_set());
+
+    cpu.memory.write_byte(0, OPCODE_CLI_IMP);
+    cpu.process_instruction();
+
+    REQUIRE(!cpu.registers.p.int_disable_flag_set());
+}
