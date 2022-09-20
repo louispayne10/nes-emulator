@@ -10,9 +10,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 SET(TEST_FILES adc_tests.cpp
-               and_tests.cpp
                asl_tests.cpp
-               bit_tests.cpp
                memory_tests.cpp
                branch_instruction_tests.cpp
                load_instruction_tests.cpp

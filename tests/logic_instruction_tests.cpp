@@ -36,3 +36,51 @@ TEST_CASE("cmp imm", "[cmp],[cpu],[imm],[instruction]")
         REQUIRE(!cpu.registers.p.zero_flag_set());
     }
 }
+
+TEST_CASE("add imm", "[add],[cpu],[imm],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_AND_IMM);
+
+    SECTION("non zero, non negative and")
+    {
+        cpu.memory.write_byte(1, 0b1100'1100);
+        cpu.registers.a = 0b1110'0110;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.a == 0b1100'0100);
+    }
+}
+
+TEST_CASE("bit zp", "[bit],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_BIT_ZP);
+
+    SECTION("zero flag set")
+    {
+        cpu.registers.p.set_negative_flag();
+        cpu.registers.p.set_overflow_bit();
+        cpu.memory.write_byte(1, 0x20);
+        cpu.memory.write_byte(0x20, 0b0001'0001);
+        cpu.registers.a = 0b0001'0000;
+        cpu.process_instruction();
+
+        REQUIRE(!cpu.registers.p.zero_flag_set());
+        REQUIRE(!cpu.registers.p.overflow_flag_set());
+        REQUIRE(!cpu.registers.p.negative_flag_set());
+    }
+
+    SECTION("zero flag cleared")
+    {
+        cpu.registers.p.set_zero_flag();
+        cpu.memory.write_byte(1, 0x20);
+        cpu.memory.write_byte(0x20, 0b1111'0000);
+        cpu.registers.a = 0b0000'1111;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.p.zero_flag_set());
+        REQUIRE(cpu.registers.p.overflow_flag_set());
+        REQUIRE(cpu.registers.p.negative_flag_set());
+    }
+}
