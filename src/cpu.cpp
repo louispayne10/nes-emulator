@@ -164,6 +164,9 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_INC_ABSX] = { "INC", &CPU6502::inc, &CPU6502::absx, 7 };
     m_InstructionMap[OPCODE_INX_IMP]  = { "INX", &CPU6502::inx, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_INY_IMP]  = { "INY", &CPU6502::iny, &CPU6502::imp, 2 };
+
+    m_InstructionMap[OPCODE_JMP_ABS] = { "JMP", &CPU6502::jmp, &CPU6502::abs, 3 };
+    m_InstructionMap[OPCODE_JMP_IND] = { "JMP", &CPU6502::jmp, &CPU6502::ind, 5 };
 }
 
 void CPU6502::next_cycle()
@@ -282,6 +285,13 @@ uint16_t CPU6502::rel()
 uint16_t CPU6502::imp()
 {
     return 0;
+}
+
+uint16_t CPU6502::ind()
+{
+    const uint16_t addr = memory.read_word(registers.pc);
+    registers.pc += 2;
+    return memory.read_word(addr);
 }
 
 void CPU6502::lda(uint16_t data_addr)
@@ -648,4 +658,10 @@ void CPU6502::iny(uint16_t data_addr)
     if (is_negative(registers.y)) {
         registers.p.set_negative_flag();
     }
+}
+
+void CPU6502::jmp(uint16_t data_addr)
+{
+    const uint8_t data = memory.read_byte(data_addr);
+    registers.pc       = data;
 }

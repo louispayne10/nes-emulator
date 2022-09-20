@@ -178,3 +178,36 @@ TEST_CASE("bvs rel", "[bvs],[cpu],[rel],[instruction]")
         REQUIRE(cpu.registers.pc == 22);
     }
 }
+
+TEST_CASE("jmp abs", "[jmp],[cpu],[abs],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_JMP_ABS);
+
+    SECTION("basic jmp")
+    {
+        cpu.memory.write_word(1, 0x220);
+        cpu.memory.write_byte(0x220, 0x40);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.pc == 0x40);
+    }
+}
+
+TEST_CASE("jmp ind", "[jmp],[cpu],[ind],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_JMP_IND);
+
+    SECTION("basic jmp")
+    {
+        cpu.memory.write_byte(1, 0x34);
+        cpu.memory.write_byte(2, 0x12);
+        cpu.memory.write_byte(0x1234, 0x50);
+        cpu.memory.write_byte(0x1235, 0x12);
+        cpu.memory.write_byte(0x1250, 42);
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.pc == 42);
+    }
+}

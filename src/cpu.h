@@ -81,6 +81,7 @@ public:
     uint16_t indy();
     uint16_t rel();
     uint16_t imp();
+    uint16_t ind();
 
     // generic instructions
     void lda(uint16_t data_addr);
@@ -113,6 +114,7 @@ public:
     void inc(uint16_t data_addr);
     void inx(uint16_t data_addr);
     void iny(uint16_t data_addr);
+    void jmp(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
