@@ -37,7 +37,7 @@ TEST_CASE("cmp imm", "[cmp],[cpu],[imm],[instruction]")
     }
 }
 
-TEST_CASE("add imm", "[add],[cpu],[imm],[instruction]")
+TEST_CASE("and imm", "[and],[cpu],[imm],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_AND_IMM);
