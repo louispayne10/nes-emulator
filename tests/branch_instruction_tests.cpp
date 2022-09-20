@@ -124,14 +124,11 @@ TEST_CASE("bmi rel", "[bmi],[cpu],[rel],[instruction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_BMI_REL);
 
-    SECTION("branch bmi")
-    {
-        cpu.memory.write_byte(1, 20);
-        cpu.registers.p.set_negative_flag();
-        cpu.process_instruction();
+    cpu.memory.write_byte(1, 20);
+    cpu.registers.p.set_negative_flag();
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.pc == 22);
-    }
+    REQUIRE(cpu.registers.pc == 22);
 }
 
 TEST_CASE("bpl rel", "[bpl],[cpu],[rel],[instruction]")
@@ -139,14 +136,11 @@ TEST_CASE("bpl rel", "[bpl],[cpu],[rel],[instruction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_BPL_REL);
 
-    SECTION("branch bpl")
-    {
-        cpu.memory.write_byte(1, 20);
-        cpu.registers.p.clear_negative_flag();
-        cpu.process_instruction();
+    cpu.memory.write_byte(1, 20);
+    cpu.registers.p.clear_negative_flag();
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.pc == 22);
-    }
+    REQUIRE(cpu.registers.pc == 22);
 }
 
 TEST_CASE("bvc rel", "[bvc],[cpu],[rel],[instruction]")
@@ -154,14 +148,11 @@ TEST_CASE("bvc rel", "[bvc],[cpu],[rel],[instruction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_BVC_REL);
 
-    SECTION("branch bvc")
-    {
-        cpu.memory.write_byte(1, 20);
-        cpu.registers.p.clear_overflow_flag();
-        cpu.process_instruction();
+    cpu.memory.write_byte(1, 20);
+    cpu.registers.p.clear_overflow_flag();
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.pc == 22);
-    }
+    REQUIRE(cpu.registers.pc == 22);
 }
 
 TEST_CASE("bvs rel", "[bvs],[cpu],[rel],[instruction]")
@@ -169,14 +160,11 @@ TEST_CASE("bvs rel", "[bvs],[cpu],[rel],[instruction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_BVS_REL);
 
-    SECTION("branch bvs")
-    {
-        cpu.memory.write_byte(1, 20);
-        cpu.registers.p.set_overflow_bit();
-        cpu.process_instruction();
+    cpu.memory.write_byte(1, 20);
+    cpu.registers.p.set_overflow_bit();
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.pc == 22);
-    }
+    REQUIRE(cpu.registers.pc == 22);
 }
 
 TEST_CASE("jmp abs", "[jmp],[cpu],[abs],[instruction]")
@@ -184,14 +172,11 @@ TEST_CASE("jmp abs", "[jmp],[cpu],[abs],[instruction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_JMP_ABS);
 
-    SECTION("basic jmp")
-    {
-        cpu.memory.write_word(1, 0x220);
-        cpu.memory.write_byte(0x220, 0x40);
-        cpu.process_instruction();
+    cpu.memory.write_word(1, 0x220);
+    cpu.memory.write_byte(0x220, 0x40);
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.pc == 0x40);
-    }
+    REQUIRE(cpu.registers.pc == 0x40);
 }
 
 TEST_CASE("jmp ind", "[jmp],[cpu],[ind],[instruction]")
@@ -199,15 +184,12 @@ TEST_CASE("jmp ind", "[jmp],[cpu],[ind],[instruction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_JMP_IND);
 
-    SECTION("basic jmp")
-    {
-        cpu.memory.write_byte(1, 0x34);
-        cpu.memory.write_byte(2, 0x12);
-        cpu.memory.write_byte(0x1234, 0x50);
-        cpu.memory.write_byte(0x1235, 0x12);
-        cpu.memory.write_byte(0x1250, 42);
-        cpu.process_instruction();
+    cpu.memory.write_byte(1, 0x34);
+    cpu.memory.write_byte(2, 0x12);
+    cpu.memory.write_byte(0x1234, 0x50);
+    cpu.memory.write_byte(0x1235, 0x12);
+    cpu.memory.write_byte(0x1250, 42);
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.pc == 42);
-    }
+    REQUIRE(cpu.registers.pc == 42);
 }
