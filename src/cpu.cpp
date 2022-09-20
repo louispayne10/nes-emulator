@@ -107,6 +107,10 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_BIT_ZP]  = { "BIT", &CPU6502::bit, &CPU6502::zp, 2 };
     m_InstructionMap[OPCODE_BIT_ABS] = { "BIT", &CPU6502::bit, &CPU6502::abs, 3 };
+
+    m_InstructionMap[OPCODE_BMI_REL] = { "BMI", &CPU6502::bmi, &CPU6502::rel, 2 };
+
+    m_InstructionMap[OPCODE_BPL_REL] = { "BPL", &CPU6502::bpl, &CPU6502::rel, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -338,38 +342,31 @@ void CPU6502::displace_pc_from_data_addr(uint16_t data_addr)
 
 void CPU6502::bcc(uint16_t data_addr)
 {
-    if (registers.p.carry_bit_set()) {
-        return;
+    if (!registers.p.carry_bit_set()) {
+        displace_pc_from_data_addr(data_addr);
     }
-
-    displace_pc_from_data_addr(data_addr);
 }
 
 void CPU6502::bcs(uint16_t data_addr)
 {
-    if (!registers.p.carry_bit_set()) {
+    if (registers.p.carry_bit_set()) {
+        displace_pc_from_data_addr(data_addr);
         return;
     }
-
-    displace_pc_from_data_addr(data_addr);
 }
 
 void CPU6502::beq(uint16_t data_addr)
 {
-    if (!registers.p.zero_flag_set()) {
-        return;
+    if (registers.p.zero_flag_set()) {
+        displace_pc_from_data_addr(data_addr);
     }
-
-    displace_pc_from_data_addr(data_addr);
 }
 
 void CPU6502::bne(uint16_t data_addr)
 {
-    if (registers.p.zero_flag_set()) {
-        return;
+    if (!registers.p.zero_flag_set()) {
+        displace_pc_from_data_addr(data_addr);
     }
-
-    displace_pc_from_data_addr(data_addr);
 }
 
 void CPU6502::bit(uint16_t data_addr)
@@ -390,4 +387,18 @@ void CPU6502::bit(uint16_t data_addr)
         registers.p.set_overflow_bit();
     else
         registers.p.clear_overflow_flag();
+}
+
+void CPU6502::bmi(uint16_t data_addr)
+{
+    if (registers.p.negative_flag_set()) {
+        displace_pc_from_data_addr(data_addr);
+    }
+}
+
+void CPU6502::bpl(uint16_t data_addr)
+{
+    if (!registers.p.negative_flag_set()) {
+        displace_pc_from_data_addr(data_addr);
+    }
 }

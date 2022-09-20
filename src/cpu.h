@@ -89,6 +89,8 @@ public:
     void beq(uint16_t data_addr);
     void bne(uint16_t data_addr);
     void bit(uint16_t data_addr);
+    void bmi(uint16_t data_addr);
+    void bpl(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
