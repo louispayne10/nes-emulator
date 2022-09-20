@@ -147,3 +147,25 @@ TEST_CASE("dec zp", "[dec],[cpu],[zp],[instruction]")
         REQUIRE(cpu.memory.read_byte(0x20) == 41);
     }
 }
+
+TEST_CASE("dex imp", "[dex],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_DEX_IMP);
+
+    SECTION("decrement x basic")
+    {
+        cpu.registers.x = 42;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.x == 41);
+    }
+
+    SECTION("decrement x wrap")
+    {
+        cpu.registers.x = 0;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.x == 0xFF);
+    }
+}
