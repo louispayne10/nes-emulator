@@ -76,6 +76,7 @@ public:
     uint16_t indx();
     uint16_t indy();
     uint16_t rel();
+    uint16_t imp();
 
     // generic instructions
     void lda(uint16_t data_addr);
@@ -91,6 +92,7 @@ public:
     void bit(uint16_t data_addr);
     void bmi(uint16_t data_addr);
     void bpl(uint16_t data_addr);
+    void brk(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

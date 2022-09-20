@@ -111,6 +111,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_BMI_REL] = { "BMI", &CPU6502::bmi, &CPU6502::rel, 2 };
 
     m_InstructionMap[OPCODE_BPL_REL] = { "BPL", &CPU6502::bpl, &CPU6502::rel, 2 };
+
+    m_InstructionMap[OPCODE_BRK_IMP] = { "BRK", &CPU6502::brk, &CPU6502::imp, 7 };
 }
 
 void CPU6502::next_cycle()
@@ -224,6 +226,11 @@ uint16_t CPU6502::indy()
 uint16_t CPU6502::rel()
 {
     return registers.pc++;
+}
+
+uint16_t CPU6502::imp()
+{
+    return 0;
 }
 
 void CPU6502::lda(uint16_t data_addr)
@@ -401,4 +408,10 @@ void CPU6502::bpl(uint16_t data_addr)
     if (!registers.p.negative_flag_set()) {
         displace_pc_from_data_addr(data_addr);
     }
+}
+
+void CPU6502::brk(uint16_t data_addr)
+{
+    (void)data_addr;
+    NOT_IMPLEMENTED();
 }

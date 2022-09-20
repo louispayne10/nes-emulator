@@ -3,6 +3,7 @@
 #include <cstdint>
 
 enum OPCODE {
+    OPCODE_BRK_IMP  = 0x00,
     OPCODE_ASL_ZP   = 0x06,
     OPCODE_ASL_ACC  = 0x0A,
     OPCODE_ASL_ABS  = 0x0E,
