@@ -94,6 +94,7 @@ enum OPCODE {
     OPCODE_CPX_ZP   = 0xE4,
     OPCODE_INC_ZP   = 0xE6,
     OPCODE_INX_IMP  = 0xE8,
+    OPCODE_NOP_IMP  = 0xEA,
     OPCODE_CPX_ABS  = 0xEC,
     OPCODE_INC_ABS  = 0xEE,
     OPCODE_BEQ_REL  = 0xF0,

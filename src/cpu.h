@@ -117,6 +117,7 @@ public:
     void jmp(uint16_t data_addr);
     void jsr(uint16_t data_addr);
     void lsr(uint16_t data_addr);
+    void nop(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

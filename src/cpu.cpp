@@ -174,6 +174,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_LSR_ZPX]  = { "LSR", &CPU6502::lsr, &CPU6502::zpx, 6 };
     m_InstructionMap[OPCODE_LSR_ABS]  = { "LSR", &CPU6502::lsr, &CPU6502::abs, 6 };
     m_InstructionMap[OPCODE_LSR_ABSX] = { "LSR", &CPU6502::lsr, &CPU6502::absx, 7 };
+
+    m_InstructionMap[OPCODE_NOP_IMP] = { "NOP", &CPU6502::nop, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -703,4 +705,9 @@ void CPU6502::lsr_acc(uint16_t data_addr)
     if (carry) {
         registers.p.set_carry_bit();
     }
+}
+
+void CPU6502::nop(uint16_t data_addr)
+{
+    (void)data_addr;
 }

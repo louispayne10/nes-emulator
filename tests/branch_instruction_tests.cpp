@@ -206,3 +206,13 @@ TEST_CASE("jsr abs", "[jsr],[cpu],[ind],[instruction]")
     // TODO: add test that we actually pushed it onto the stack
     REQUIRE(cpu.registers.pc == 0x40);
 }
+
+TEST_CASE("nop imp", "[nop],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_NOP_IMP);
+
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.pc == 1);
+}
