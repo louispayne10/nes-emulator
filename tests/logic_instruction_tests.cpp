@@ -42,14 +42,11 @@ TEST_CASE("and imm", "[and],[cpu],[imm],[instruction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_AND_IMM);
 
-    SECTION("non zero, non negative and")
-    {
-        cpu.memory.write_byte(1, 0b1100'1100);
-        cpu.registers.a = 0b1110'0110;
-        cpu.process_instruction();
+    cpu.memory.write_byte(1, 0b1100'1100);
+    cpu.registers.a = 0b1110'0110;
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.a == 0b1100'0100);
-    }
+    REQUIRE(cpu.registers.a == 0b1100'0100);
 }
 
 TEST_CASE("bit zp", "[bit],[cpu],[zp],[instruction]")
@@ -158,12 +155,21 @@ TEST_CASE("eor imm", "[eor],[cpu],[imm],[instrsuction]")
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_EOR_IMM);
 
-    SECTION("non zero, non negative eor")
-    {
-        cpu.memory.write_byte(1, 0b0101'0101);
-        cpu.registers.a = 0b0000'1100;
-        cpu.process_instruction();
+    cpu.memory.write_byte(1, 0b0101'0101);
+    cpu.registers.a = 0b0000'1100;
+    cpu.process_instruction();
 
-        REQUIRE(cpu.registers.a == 0b0101'1001);
-    }
+    REQUIRE(cpu.registers.a == 0b0101'1001);
+}
+
+TEST_CASE("ora imm", "[ora],[cpu],[imm],[instrsuction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_ORA_IMM);
+
+    cpu.memory.write_byte(1, 0b0101'0101);
+    cpu.registers.a = 0b0000'1100;
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.a == 0b0101'1101);
 }

@@ -176,6 +176,15 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_LSR_ABSX] = { "LSR", &CPU6502::lsr, &CPU6502::absx, 7 };
 
     m_InstructionMap[OPCODE_NOP_IMP] = { "NOP", &CPU6502::nop, &CPU6502::imp, 2 };
+
+    m_InstructionMap[OPCODE_ORA_IMM]  = { "ORA", &CPU6502::ora, &CPU6502::imm, 2 };
+    m_InstructionMap[OPCODE_ORA_ZP]   = { "ORA", &CPU6502::ora, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_ORA_ZPX]  = { "ORA", &CPU6502::ora, &CPU6502::zpx, 4 };
+    m_InstructionMap[OPCODE_ORA_ABS]  = { "ORA", &CPU6502::ora, &CPU6502::abs, 4 };
+    m_InstructionMap[OPCODE_ORA_ABSX] = { "ORA", &CPU6502::ora, &CPU6502::absx, 4 };
+    m_InstructionMap[OPCODE_ORA_ABSY] = { "ORA", &CPU6502::ora, &CPU6502::absy, 4 };
+    m_InstructionMap[OPCODE_ORA_INDX] = { "ORA", &CPU6502::ora, &CPU6502::indx, 6 };
+    m_InstructionMap[OPCODE_ORA_INDY] = { "ORA", &CPU6502::ora, &CPU6502::indy, 5 };
 }
 
 void CPU6502::next_cycle()
@@ -710,4 +719,16 @@ void CPU6502::lsr_acc(uint16_t data_addr)
 void CPU6502::nop(uint16_t data_addr)
 {
     (void)data_addr;
+}
+
+void CPU6502::ora(uint16_t data_addr)
+{
+    const uint8_t data = memory.read_byte(data_addr);
+    registers.a |= data;
+    if (registers.a == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(registers.a)) {
+        registers.p.set_negative_flag();
+    }
 }
