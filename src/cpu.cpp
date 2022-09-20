@@ -121,6 +121,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_CLC_IMP] = { "CLC", &CPU6502::clc, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_CLD_IMP] = { "CLD", &CPU6502::cld, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_CLI_IMP] = { "CLI", &CPU6502::cli, &CPU6502::imp, 2 };
+    m_InstructionMap[OPCODE_CLV_IMP] = { "CLV", &CPU6502::clv, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -454,4 +455,10 @@ void CPU6502::cli(uint16_t data_addr)
 {
     (void)data_addr;
     registers.p.clear_int_disable_flag();
+}
+
+void CPU6502::clv(uint16_t data_addr)
+{
+    (void)data_addr;
+    registers.p.clear_overflow_flag();
 }

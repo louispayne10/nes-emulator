@@ -24,3 +24,15 @@ TEST_CASE("cli imp", "[cli],[cpu],[imp],[instruction]")
 
     REQUIRE(!cpu.registers.p.int_disable_flag_set());
 }
+
+TEST_CASE("clv imp", "[clv],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.registers.p.set_overflow_bit();
+    REQUIRE(cpu.registers.p.overflow_flag_set());
+
+    cpu.memory.write_byte(0, OPCODE_CLV_IMP);
+    cpu.process_instruction();
+
+    REQUIRE(!cpu.registers.p.overflow_flag_set());
+}

@@ -102,6 +102,7 @@ public:
     void clc(uint16_t data_addr);
     void cld(uint16_t data_addr);
     void cli(uint16_t data_addr);
+    void clv(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
