@@ -146,6 +146,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_DEC_ABSX] = { "DEC", &CPU6502::dec, &CPU6502::absx, 7 };
 
     m_InstructionMap[OPCODE_DEX_IMP] = { "DEX", &CPU6502::dex, &CPU6502::imp, 2 };
+    m_InstructionMap[OPCODE_DEY_IMP] = { "DEY", &CPU6502::dey, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -568,6 +569,18 @@ void CPU6502::dex(uint16_t data_addr)
         registers.p.set_zero_flag();
     }
     if (is_negative(registers.x)) {
+        registers.p.set_negative_flag();
+    }
+}
+
+void CPU6502::dey(uint16_t data_addr)
+{
+    (void)data_addr;
+    registers.y--;
+    if (registers.y == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(registers.y)) {
         registers.p.set_negative_flag();
     }
 }

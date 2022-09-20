@@ -169,3 +169,25 @@ TEST_CASE("dex imp", "[dex],[cpu],[imp],[instruction]")
         REQUIRE(cpu.registers.x == 0xFF);
     }
 }
+
+TEST_CASE("dey imp", "[dey],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_DEY_IMP);
+
+    SECTION("decrement y basic")
+    {
+        cpu.registers.y = 42;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.y == 41);
+    }
+
+    SECTION("decrement y wrap")
+    {
+        cpu.registers.y = 0;
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.y == 0xFF);
+    }
+}

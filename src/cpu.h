@@ -108,6 +108,7 @@ public:
     void cpy(uint16_t data_addr);
     void dec(uint16_t data_addr);
     void dex(uint16_t data_addr);
+    void dey(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
