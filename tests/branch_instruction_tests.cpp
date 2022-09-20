@@ -163,3 +163,18 @@ TEST_CASE("bvc rel", "[bvc],[cpu],[rel],[instruction]")
         REQUIRE(cpu.registers.pc == 22);
     }
 }
+
+TEST_CASE("bvs rel", "[bvs],[cpu],[rel],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_BVS_REL);
+
+    SECTION("branch bvs")
+    {
+        cpu.memory.write_byte(1, 20);
+        cpu.registers.p.set_overflow_bit();
+        cpu.process_instruction();
+
+        REQUIRE(cpu.registers.pc == 22);
+    }
+}
