@@ -151,20 +151,6 @@ TEST_CASE("lda absx", "[lda],[cpu],[absx],[instruction]")
         REQUIRE(cpu.registers.pc == 3);
         REQUIRE(cpu.registers.a == 42);
     }
-
-    SECTION("non zero, non negative, wrapped load")
-    {
-        // TODO: verify that this is the behaviour that is supposed to happen
-        // I've assumed that if X + addr is greater than 0xFFFF that it wraps
-        // around to 0 - this is the same for absy
-        cpu.memory.write_word(1, 0xFFF0);
-        cpu.registers.x = 0xFF;
-        cpu.memory.write_byte(0xEF, 42);
-        cpu.process_instruction();
-
-        REQUIRE(cpu.registers.pc == 3);
-        REQUIRE(cpu.registers.a == 42);
-    }
 }
 
 TEST_CASE("lda absy", "[lda],[cpu],[absy],[instruction]")
@@ -177,17 +163,6 @@ TEST_CASE("lda absy", "[lda],[cpu],[absy],[instruction]")
         cpu.memory.write_word(1, 0xB0);
         cpu.registers.y = 0x10;
         cpu.memory.write_byte(0xC0, 42);
-        cpu.process_instruction();
-
-        REQUIRE(cpu.registers.pc == 3);
-        REQUIRE(cpu.registers.a == 42);
-    }
-
-    SECTION("non zero, non negative, wrapped load")
-    {
-        cpu.memory.write_word(1, 0xFFF0);
-        cpu.registers.y = 0xFF;
-        cpu.memory.write_byte(0xEF, 42);
         cpu.process_instruction();
 
         REQUIRE(cpu.registers.pc == 3);
