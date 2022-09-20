@@ -53,5 +53,6 @@ enum OPCODE {
     OPCODE_LDA_ABSX = 0xBD,
     OPCODE_LDX_ABSY = 0xBE,
     OPCODE_BNE_REL  = 0xD0,
+    OPCODE_CLD_IMP  = 0xD8,
     OPCODE_BEQ_REL  = 0xF0
 };

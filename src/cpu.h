@@ -96,6 +96,7 @@ public:
     void bvc(uint16_t data_addr);
     void bvs(uint16_t data_addr);
     void clc(uint16_t data_addr);
+    void cld(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

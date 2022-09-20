@@ -119,6 +119,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_BVS_REL] = { "BVS", &CPU6502::bvs, &CPU6502::rel, 2 };
 
     m_InstructionMap[OPCODE_CLC_IMP] = { "CLC", &CPU6502::clc, &CPU6502::imp, 2 };
+    m_InstructionMap[OPCODE_CLD_IMP] = { "CLD", &CPU6502::cld, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -440,4 +441,10 @@ void CPU6502::clc(uint16_t data_addr)
 {
     (void)data_addr;
     registers.p.clear_carry_flag();
+}
+
+void CPU6502::cld(uint16_t data_addr)
+{
+    (void)data_addr;
+    NOT_IMPLEMENTED();
 }
