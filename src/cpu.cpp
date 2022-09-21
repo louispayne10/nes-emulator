@@ -53,6 +53,8 @@ bool operator==(StatusRegister lhs, StatusRegister rhs)
 
 CPU6502::CPU6502()
 {
+    registers.s = 0xFF;
+
     m_InstructionMap[OPCODE_LDA_IMM]  = { "LDA", &CPU6502::lda, &CPU6502::imm, 2 };
     m_InstructionMap[OPCODE_LDA_ZP]   = { "LDA", &CPU6502::lda, &CPU6502::zp, 3 };
     m_InstructionMap[OPCODE_LDA_ZPX]  = { "LDA", &CPU6502::lda, &CPU6502::zpx, 4 };
@@ -185,6 +187,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_ORA_ABSY] = { "ORA", &CPU6502::ora, &CPU6502::absy, 4 };
     m_InstructionMap[OPCODE_ORA_INDX] = { "ORA", &CPU6502::ora, &CPU6502::indx, 6 };
     m_InstructionMap[OPCODE_ORA_INDY] = { "ORA", &CPU6502::ora, &CPU6502::indy, 5 };
+
+    m_InstructionMap[OPCODE_PHA_IMP] = { "PHA", &CPU6502::pha, &CPU6502::imp, 3 };
 }
 
 void CPU6502::next_cycle()
@@ -216,6 +220,11 @@ void CPU6502::push_stack(uint8_t data)
 {
     memory.write_byte(registers.s + 0x100, data);
     registers.s--;
+}
+
+uint8_t CPU6502::stack_top() const
+{
+    return memory.read_byte(registers.s + 0x100 + 1);
 }
 
 uint16_t CPU6502::imm()
@@ -731,4 +740,10 @@ void CPU6502::ora(uint16_t data_addr)
     if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
+}
+
+void CPU6502::pha(uint16_t data_addr)
+{
+    (void)data_addr;
+    push_stack(registers.a);
 }

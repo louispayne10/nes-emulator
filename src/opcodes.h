@@ -34,6 +34,7 @@ enum OPCODE {
     OPCODE_EOR_INDX = 0x41,
     OPCODE_EOR_ZP   = 0x45,
     OPCODE_LSR_ZP   = 0x46,
+    OPCODE_PHA_IMP  = 0x48,
     OPCODE_EOR_IMM  = 0x49,
     OPCODE_LSR_ACC  = 0x4A,
     OPCODE_JMP_ABS  = 0x4C,
