@@ -25,3 +25,13 @@ TEST_CASE("php imp", "[php],[cpu],[imp],[instruction]")
     REQUIRE(reg.zero_flag_set());
     REQUIRE(reg.overflow_flag_set());
 }
+
+TEST_CASE("pla imp", "[pla],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_PLA_IMP);
+    cpu.push_stack(42);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.a == 42);
+}

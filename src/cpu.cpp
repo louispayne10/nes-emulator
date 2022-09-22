@@ -190,6 +190,7 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_PHA_IMP] = { "PHA", &CPU6502::pha, &CPU6502::imp, 3 };
     m_InstructionMap[OPCODE_PHP_IMP] = { "PHP", &CPU6502::php, &CPU6502::imp, 3 };
+    m_InstructionMap[OPCODE_PLA_IMP] = { "PLA", &CPU6502::pla, &CPU6502::imp, 4 };
 }
 
 void CPU6502::next_cycle()
@@ -226,6 +227,13 @@ void CPU6502::push_stack(uint8_t data)
 uint8_t CPU6502::stack_top() const
 {
     return memory.read_byte(registers.s + 0x100 + 1);
+}
+
+uint8_t CPU6502::stack_pop()
+{
+    uint8_t val = stack_top();
+    registers.s++;
+    return val;
 }
 
 uint16_t CPU6502::imm()
@@ -753,4 +761,16 @@ void CPU6502::php(uint16_t data_addr)
 {
     (void)data_addr;
     push_stack((uint8_t)registers.p.reg);
+}
+
+void CPU6502::pla(uint16_t addr_data)
+{
+    (void)addr_data;
+    registers.a = stack_pop();
+    if (registers.a == 0) {
+        registers.p.set_zero_flag();
+    }
+    if (is_negative(registers.a)) {
+        registers.p.set_negative_flag();
+    }
 }
