@@ -128,6 +128,7 @@ public:
     void ror(uint16_t data_addr);
     void rti(uint16_t data_addr);
     void rts(uint16_t data_addr);
+    void sbc(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

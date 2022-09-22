@@ -212,6 +212,15 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_RTI_IMP] = { "RTI", &CPU6502::rti, &CPU6502::imp, 6 };
     m_InstructionMap[OPCODE_RTS_IMP] = { "RTS", &CPU6502::rts, &CPU6502::imp, 6 };
+
+    m_InstructionMap[OPCODE_SBC_IMM]  = { "SBC", &CPU6502::sbc, &CPU6502::imm, 2 };
+    m_InstructionMap[OPCODE_SBC_ZP]   = { "SBC", &CPU6502::sbc, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_SBC_ZPX]  = { "SBC", &CPU6502::sbc, &CPU6502::zpx, 4 };
+    m_InstructionMap[OPCODE_SBC_ABS]  = { "SBC", &CPU6502::sbc, &CPU6502::abs, 4 };
+    m_InstructionMap[OPCODE_SBC_ABSX] = { "SBC", &CPU6502::sbc, &CPU6502::absx, 4 };
+    m_InstructionMap[OPCODE_SBC_ABSY] = { "SBC", &CPU6502::sbc, &CPU6502::absy, 4 };
+    m_InstructionMap[OPCODE_SBC_INDX] = { "SBC", &CPU6502::sbc, &CPU6502::indx, 6 };
+    m_InstructionMap[OPCODE_SBC_INDY] = { "SBC", &CPU6502::sbc, &CPU6502::indy, 5 };
 }
 
 void CPU6502::next_cycle()
@@ -866,4 +875,26 @@ void CPU6502::rts(uint16_t data_addr)
 {
     (void)data_addr;
     registers.pc = stack_pop() + 1;
+}
+
+void CPU6502::sbc(uint16_t data_addr)
+{
+    const uint8_t data    = memory.read_byte(data_addr);
+    const uint16_t res    = registers.a - data - (~(uint8_t)registers.p.carry_bit_set());
+    const uint8_t old_acc = registers.a;
+    registers.a           = res & 0xFF;
+    if (res > 0xFF) {
+        registers.p.clear_carry_flag();
+    } else {
+        registers.p.set_carry_bit();
+    }
+    if (is_positive(old_acc) && is_positive(data) && is_negative(registers.a)) {
+        registers.p.set_overflow_bit();
+    }
+    if (is_negative(old_acc) && is_negative(data) && is_positive(registers.a)) {
+        registers.p.set_overflow_bit();
+    }
+    if (registers.a == 0) {
+        registers.p.set_zero_flag();
+    }
 }

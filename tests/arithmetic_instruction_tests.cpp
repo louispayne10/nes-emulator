@@ -312,3 +312,31 @@ TEST_CASE("ror zp", "[ror],[cpu],[zp],[instruction]")
     REQUIRE(cpu.memory.read_byte(0x20) == 0b0101'0101);
     REQUIRE(!cpu.registers.p.carry_bit_set());
 }
+
+TEST_CASE("sbc imm", "[sbc],[cpu],[imm],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_SBC_IMM);
+
+    SECTION("basic sbc")
+    {
+        cpu.registers.a = 100;
+        cpu.memory.write_byte(1, 50);
+        cpu.process_instruction();
+
+        // 150 - 50 - 255 (mod 256) = 101
+        REQUIRE(cpu.registers.a == 51);
+        REQUIRE(!cpu.registers.p.overflow_flag_set());
+    }
+
+    SECTION("sbc with carry flag")
+    {
+        cpu.registers.a = 150;
+        cpu.memory.write_byte(1, 50);
+        cpu.registers.p.set_carry_bit();
+        cpu.process_instruction();
+
+        // 150 - 50 - 254 = 102
+        REQUIRE(cpu.registers.a == 102);
+    }
+}
