@@ -58,7 +58,10 @@ bool operator==(StatusRegister lhs, StatusRegister rhs)
 
 CPU6502::CPU6502()
 {
-    registers.s = 0xFF;
+    registers.s = 0xFD;
+    registers.p.set_int_disable_flag();
+    registers.p.set_overflow_bit();
+    registers.p.set_negative_flag();
 
     m_InstructionMap[OPCODE_LDA_IMM]  = { "LDA", &CPU6502::lda, &CPU6502::imm, 2 };
     m_InstructionMap[OPCODE_LDA_ZP]   = { "LDA", &CPU6502::lda, &CPU6502::zp, 3 };

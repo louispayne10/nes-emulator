@@ -30,7 +30,7 @@ TEST_CASE("tsx imp", "[tsx],[cpu],[imp],[instruction]")
     cpu.stack_push(40);
     cpu.process_instruction();
 
-    REQUIRE(cpu.registers.x == 0xFE);
+    REQUIRE(cpu.registers.x == 0xFC);
 }
 
 TEST_CASE("txa imp", "[txa],[cpu],[imp],[instruction]")

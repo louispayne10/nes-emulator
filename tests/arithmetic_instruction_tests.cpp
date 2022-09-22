@@ -317,6 +317,7 @@ TEST_CASE("sbc imm", "[sbc],[cpu],[imm],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_SBC_IMM);
+    cpu.registers.p.clear_overflow_flag();
 
     SECTION("basic sbc")
     {
