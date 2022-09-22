@@ -7,6 +7,7 @@ enum OPCODE {
     OPCODE_ORA_INDX = 0x01,
     OPCODE_ORA_ZP   = 0x05,
     OPCODE_ASL_ZP   = 0x06,
+    OPCODE_PHP_IMP  = 0x08,
     OPCODE_ORA_IMM  = 0x09,
     OPCODE_ASL_ACC  = 0x0A,
     OPCODE_ORA_ABS  = 0x0D,

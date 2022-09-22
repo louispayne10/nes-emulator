@@ -12,3 +12,16 @@ TEST_CASE("pha imp", "[pha],[cpu],[imp],[instruction]")
 
     REQUIRE(cpu.stack_top() == 0x42);
 }
+
+TEST_CASE("php imp", "[php],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_PHP_IMP);
+    cpu.registers.p.set_zero_flag();
+    cpu.registers.p.set_overflow_bit();
+    cpu.process_instruction();
+
+    StatusRegister reg = StatusRegister{ (StatusRegFlag)cpu.stack_top() };
+    REQUIRE(reg.zero_flag_set());
+    REQUIRE(reg.overflow_flag_set());
+}

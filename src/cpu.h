@@ -120,6 +120,7 @@ public:
     void nop(uint16_t data_addr);
     void ora(uint16_t data_addr);
     void pha(uint16_t data_addr);
+    void php(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
