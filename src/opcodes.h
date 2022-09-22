@@ -96,6 +96,7 @@ enum OPCODE {
     OPCODE_LDY_ZP   = 0xA4,
     OPCODE_LDA_ZP   = 0xA5,
     OPCODE_LDX_ZP   = 0xA6,
+    OPCODE_TAY_IMP  = 0xA8,
     OPCODE_LDA_IMM  = 0xA9,
     OPCODE_TAX_IMP  = 0xAA,
     OPCODE_LDY_ABS  = 0xAC,

@@ -241,6 +241,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_STY_ABS]  = { "STY", &CPU6502::sty, &CPU6502::abs, 4 };
 
     m_InstructionMap[OPCODE_TAX_IMP] = { "TAX", &CPU6502::tax, &CPU6502::imp, 2 };
+    m_InstructionMap[OPCODE_TAY_IMP] = { "TAX", &CPU6502::tay, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -968,4 +969,10 @@ void CPU6502::tax(uint16_t)
 {
     registers.x = registers.a;
     adjust_zero_and_negative_flags(registers.x);
+}
+
+void CPU6502::tay(uint16_t)
+{
+    registers.y = registers.a;
+    adjust_zero_and_negative_flags(registers.y);
 }

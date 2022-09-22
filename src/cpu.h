@@ -140,6 +140,7 @@ public:
     void stx(uint16_t data_addr);
     void sty(uint16_t data_addr);
     void tax(uint16_t data_addr);
+    void tay(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
