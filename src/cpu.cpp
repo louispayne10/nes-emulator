@@ -218,7 +218,7 @@ uint8_t CPU6502::process_instruction()
     return handler_it->second.cycles;
 }
 
-void CPU6502::push_stack(uint8_t data)
+void CPU6502::stack_push(uint8_t data)
 {
     memory.write_byte(registers.s + 0x100, data);
     registers.s--;
@@ -709,7 +709,7 @@ void CPU6502::jmp(uint16_t data_addr)
 
 void CPU6502::jsr(uint16_t data_addr)
 {
-    push_stack(registers.pc - 1);
+    stack_push(registers.pc - 1);
     registers.pc = memory.read_byte(data_addr);
 }
 
@@ -754,13 +754,13 @@ void CPU6502::ora(uint16_t data_addr)
 void CPU6502::pha(uint16_t data_addr)
 {
     (void)data_addr;
-    push_stack(registers.a);
+    stack_push(registers.a);
 }
 
 void CPU6502::php(uint16_t data_addr)
 {
     (void)data_addr;
-    push_stack((uint8_t)registers.p.reg);
+    stack_push((uint8_t)registers.p.reg);
 }
 
 void CPU6502::pla(uint16_t addr_data)

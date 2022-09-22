@@ -30,7 +30,7 @@ TEST_CASE("pla imp", "[pla],[cpu],[imp],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_PLA_IMP);
-    cpu.push_stack(42);
+    cpu.stack_push(42);
     cpu.process_instruction();
 
     REQUIRE(cpu.registers.a == 42);

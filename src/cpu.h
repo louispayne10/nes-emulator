@@ -128,7 +128,7 @@ public:
     uint8_t asl_impl(uint8_t data);
     void lsr_acc(uint16_t data_addr);
     void displace_pc_from_data_addr(uint16_t data_addr);
-    void push_stack(uint8_t data);
+    void stack_push(uint8_t data);
     uint8_t stack_top() const;
     uint8_t stack_pop();
 
