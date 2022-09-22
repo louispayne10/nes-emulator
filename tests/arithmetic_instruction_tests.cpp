@@ -71,11 +71,6 @@ TEST_CASE("adc imm", "[adc],[cpu],[imm],[instruction]")
     }
 }
 
-#include <catch2/catch_test_macros.hpp>
-
-#include "cpu.h"
-#include "opcodes.h"
-
 TEST_CASE("asl acc", "[asl],[cpu],[acc],[instruction]")
 {
     CPU6502 cpu;
