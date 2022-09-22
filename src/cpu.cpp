@@ -209,6 +209,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_ROR_ZPX]  = { "ROR", &CPU6502::ror, &CPU6502::zpx, 6 };
     m_InstructionMap[OPCODE_ROR_ABS]  = { "ROR", &CPU6502::ror, &CPU6502::abs, 6 };
     m_InstructionMap[OPCODE_ROR_ABSX] = { "ROR", &CPU6502::ror, &CPU6502::absx, 7 };
+
+    m_InstructionMap[OPCODE_RTI_IMP] = { "RTI", &CPU6502::rti, &CPU6502::imp, 6 };
 }
 
 void CPU6502::next_cycle()
@@ -851,4 +853,10 @@ uint8_t CPU6502::ror_impl(uint8_t data)
     }
 
     return data;
+}
+
+void CPU6502::rti(uint16_t data_addr)
+{
+    (void)data_addr;
+    NOT_IMPLEMENTED();
 }

@@ -126,6 +126,7 @@ public:
     void plp(uint16_t data_addr);
     void rol(uint16_t data_addr);
     void ror(uint16_t data_addr);
+    void rti(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
