@@ -24,6 +24,7 @@ enum OPCODE {
     OPCODE_AND_INDX = 0x21,
     OPCODE_BIT_ZP   = 0x24,
     OPCODE_AND_ZP   = 0x25,
+    OPCODE_PLP_IMP  = 0x28,
     OPCODE_AND_IMM  = 0x29,
     OPCODE_BIT_ABS  = 0x2C,
     OPCODE_AND_ABS  = 0x2D,

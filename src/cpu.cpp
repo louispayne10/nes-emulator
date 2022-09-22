@@ -41,6 +41,11 @@ bool operator&(StatusRegFlag a, StatusRegFlag b)
     return (uint8_t)a & (uint8_t)b;
 }
 
+StatusRegFlag operator|(StatusRegFlag a, StatusRegFlag b)
+{
+    return (StatusRegFlag)((uint8_t)a | (uint8_t)b);
+}
+
 StatusRegFlag operator~(StatusRegFlag a)
 {
     return (StatusRegFlag)(~(uint8_t)a);
@@ -191,6 +196,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_PHA_IMP] = { "PHA", &CPU6502::pha, &CPU6502::imp, 3 };
     m_InstructionMap[OPCODE_PHP_IMP] = { "PHP", &CPU6502::php, &CPU6502::imp, 3 };
     m_InstructionMap[OPCODE_PLA_IMP] = { "PLA", &CPU6502::pla, &CPU6502::imp, 4 };
+    m_InstructionMap[OPCODE_PLP_IMP] = { "PLP", &CPU6502::plp, &CPU6502::imp, 4 };
 }
 
 void CPU6502::next_cycle()
@@ -773,4 +779,10 @@ void CPU6502::pla(uint16_t addr_data)
     if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
+}
+
+void CPU6502::plp(uint16_t data_addr)
+{
+    (void)data_addr;
+    registers.p.reg = (StatusRegFlag)stack_pop();
 }

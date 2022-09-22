@@ -18,6 +18,7 @@ enum class StatusRegFlag : uint8_t {
 StatusRegFlag& operator|=(StatusRegFlag& a, StatusRegFlag b);
 StatusRegFlag& operator&=(StatusRegFlag& a, StatusRegFlag b);
 bool operator&(StatusRegFlag a, StatusRegFlag b);
+StatusRegFlag operator|(StatusRegFlag a, StatusRegFlag b);
 StatusRegFlag operator~(StatusRegFlag a);
 
 struct StatusRegister
@@ -122,6 +123,7 @@ public:
     void pha(uint16_t data_addr);
     void php(uint16_t data_addr);
     void pla(uint16_t data_addr);
+    void plp(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
