@@ -44,6 +44,10 @@ struct StatusRegister
     void set_int_disable_flag() { reg |= StatusRegFlag::IntDisable; }
     void clear_int_disable_flag() { reg &= ~StatusRegFlag::IntDisable; }
     bool int_disable_flag_set() const { return reg & StatusRegFlag::IntDisable; }
+
+    void set_decimal_flag() { reg |= StatusRegFlag::Decimal; }
+    void clear_decimal_flag() { reg &= ~StatusRegFlag::Decimal; }
+    bool decimal_flag_set() const { return reg & StatusRegFlag::Decimal; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
 
@@ -130,6 +134,7 @@ public:
     void rts(uint16_t data_addr);
     void sbc(uint16_t data_addr);
     void sec(uint16_t data_addr);
+    void sed(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
