@@ -135,6 +135,7 @@ public:
     void sbc(uint16_t data_addr);
     void sec(uint16_t data_addr);
     void sed(uint16_t data_addr);
+    void sei(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

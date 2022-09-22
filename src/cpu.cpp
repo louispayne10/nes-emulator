@@ -224,6 +224,7 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_SEC_IMP] = { "SEC", &CPU6502::sec, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_SED_IMP] = { "SED", &CPU6502::sed, &CPU6502::imp, 2 };
+    m_InstructionMap[OPCODE_SEI_IMP] = { "SEI", &CPU6502::sei, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -910,4 +911,9 @@ void CPU6502::sec(uint16_t)
 void CPU6502::sed(uint16_t)
 {
     registers.p.set_decimal_flag();
+}
+
+void CPU6502::sei(uint16_t)
+{
+    registers.p.set_int_disable_flag();
 }
