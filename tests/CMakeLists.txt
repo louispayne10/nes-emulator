@@ -15,7 +15,8 @@ SET(TEST_FILES memory_tests.cpp
                load_instruction_tests.cpp
                flag_instruction_tests.cpp
                logic_instruction_tests.cpp
-               stack_instruction_tests.cpp)
+               stack_instruction_tests.cpp
+               transfer_instruction_tests.cpp)
 SET(NES_FILES ${CMAKE_SOURCE_DIR}/src/cpu.cpp
               ${CMAKE_SOURCE_DIR}/src/memory.cpp)
 

@@ -239,6 +239,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_STY_ZP]   = { "STY", &CPU6502::sty, &CPU6502::zp, 3 };
     m_InstructionMap[OPCODE_STY_ZPX]  = { "STY", &CPU6502::sty, &CPU6502::zpx, 4 };
     m_InstructionMap[OPCODE_STY_ABS]  = { "STY", &CPU6502::sty, &CPU6502::abs, 4 };
+
+    m_InstructionMap[OPCODE_TAX_IMP] = { "TAX", &CPU6502::tax, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -282,6 +284,21 @@ uint8_t CPU6502::stack_pop()
     uint8_t val = stack_top();
     registers.s++;
     return val;
+}
+
+void CPU6502::adjust_zero_and_negative_flags(uint8_t data)
+{
+    if (data == 0) {
+        registers.p.set_zero_flag();
+    } else {
+        registers.p.clear_zero_flag();
+    }
+
+    if (is_negative(data)) {
+        registers.p.set_negative_flag();
+    } else {
+        registers.p.clear_negative_flag();
+    }
 }
 
 uint16_t CPU6502::imm()
@@ -945,4 +962,10 @@ void CPU6502::stx(uint16_t data_addr)
 void CPU6502::sty(uint16_t data_addr)
 {
     registers.y = memory.read_byte(data_addr);
+}
+
+void CPU6502::tax(uint16_t)
+{
+    registers.x = registers.a;
+    adjust_zero_and_negative_flags(registers.x);
 }

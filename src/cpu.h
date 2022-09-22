@@ -139,6 +139,7 @@ public:
     void sta(uint16_t data_addr);
     void stx(uint16_t data_addr);
     void sty(uint16_t data_addr);
+    void tax(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
@@ -150,6 +151,7 @@ public:
     uint8_t ror_impl(uint8_t data);
 
     void displace_pc_from_data_addr(uint16_t data_addr);
+    void adjust_zero_and_negative_flags(uint8_t data);
 
     void stack_push(uint8_t data);
     uint8_t stack_top() const;
