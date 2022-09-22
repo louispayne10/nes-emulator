@@ -124,12 +124,17 @@ public:
     void php(uint16_t data_addr);
     void pla(uint16_t data_addr);
     void plp(uint16_t data_addr);
+    void rol(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);
     uint8_t asl_impl(uint8_t data);
     void lsr_acc(uint16_t data_addr);
+    void rol_acc(uint16_t data_addr);
+    uint8_t rol_impl(uint8_t data);
+
     void displace_pc_from_data_addr(uint16_t data_addr);
+
     void stack_push(uint8_t data);
     uint8_t stack_top() const;
     uint8_t stack_pop();

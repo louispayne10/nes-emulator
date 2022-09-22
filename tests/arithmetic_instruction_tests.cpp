@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "cpu.h"
+#include "memory.h"
 #include "opcodes.h"
 
 TEST_CASE("adc imm", "[adc],[cpu],[imm],[instruction]")
@@ -262,4 +263,27 @@ TEST_CASE("lsr zp", "[lsr],[cpu],[acc],[instruction]")
 
     REQUIRE(cpu.memory.read_byte(0x20) == 0b0010'1010);
     REQUIRE(cpu.registers.p.carry_bit_set());
+}
+
+TEST_CASE("rol acc", "[rol],[cpu],[acc],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_ROL_ACC);
+    cpu.registers.p.set_carry_bit();
+    cpu.registers.a = 0b1000'1100;
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.a == 0b0001'1001);
+    REQUIRE(cpu.registers.p.carry_bit_set());
+}
+
+TEST_CASE("rol zp", "[rol],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_ROL_ZP);
+    cpu.memory.write_byte(1, 0x20);
+    cpu.memory.write_byte(0x20, 0b0101'0101);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.memory.read_byte(0x20) == 0b1010'1010);
 }

@@ -197,6 +197,12 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_PHP_IMP] = { "PHP", &CPU6502::php, &CPU6502::imp, 3 };
     m_InstructionMap[OPCODE_PLA_IMP] = { "PLA", &CPU6502::pla, &CPU6502::imp, 4 };
     m_InstructionMap[OPCODE_PLP_IMP] = { "PLP", &CPU6502::plp, &CPU6502::imp, 4 };
+
+    m_InstructionMap[OPCODE_ROL_ACC]  = { "ROL", &CPU6502::rol_acc, nullptr, 2 };
+    m_InstructionMap[OPCODE_ROL_ZP]   = { "ROL", &CPU6502::rol, &CPU6502::zp, 5 };
+    m_InstructionMap[OPCODE_ROL_ZPX]  = { "ROL", &CPU6502::rol, &CPU6502::zpx, 6 };
+    m_InstructionMap[OPCODE_ROL_ABS]  = { "ROL", &CPU6502::rol, &CPU6502::abs, 6 };
+    m_InstructionMap[OPCODE_ROL_ABSX] = { "ROL", &CPU6502::rol, &CPU6502::absx, 7 };
 }
 
 void CPU6502::next_cycle()
@@ -785,4 +791,29 @@ void CPU6502::plp(uint16_t data_addr)
 {
     (void)data_addr;
     registers.p.reg = (StatusRegFlag)stack_pop();
+}
+
+void CPU6502::rol(uint16_t data_addr)
+{
+    uint8_t data = memory.read_byte(data_addr);
+    data         = rol_impl(data);
+    memory.write_byte(data_addr, data);
+}
+
+void CPU6502::rol_acc(uint16_t data_addr)
+{
+    (void)data_addr;
+    registers.a = rol_impl(registers.a);
+}
+
+uint8_t CPU6502::rol_impl(uint8_t data)
+{
+    const uint8_t old_carry = registers.p.carry_bit_set();
+
+    data <<= 1;
+    if (old_carry) {
+        data |= (uint8_t)StatusRegFlag::Carry;
+    }
+
+    return data;
 }
