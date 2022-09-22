@@ -203,8 +203,11 @@ TEST_CASE("jsr abs", "[jsr],[cpu],[ind],[instruction]")
     cpu.memory.write_byte(0x220, 0x40);
     cpu.process_instruction();
 
-    // TODO: add test that we actually pushed it onto the stack
     REQUIRE(cpu.registers.pc == 0x40);
+    // jsr pushes the address (minus one) of the return point onto the stack
+    // since jsr is a 3 byte instruction the return point should be 3
+    // hence 2 should be pushed onto the stack
+    REQUIRE(cpu.stack_top() == 2);
 }
 
 TEST_CASE("nop imp", "[nop],[cpu],[imp],[instruction]")
