@@ -1,8 +1,10 @@
 #pragma once
 
 #include "memory.h"
+
 #include <array>
 #include <cstdint>
+#include <span>
 #include <string>
 #include <unordered_map>
 
@@ -73,6 +75,9 @@ public:
     void next_cycle();
     uint8_t cycles_remaining = 0;
     uint8_t process_instruction();
+
+    void load_prg_rom(std::span<const uint8_t> buf);
+    void reset();
 
     // addressing modes
     uint16_t imm();

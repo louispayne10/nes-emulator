@@ -14,7 +14,7 @@ uint8_t& Memory::access_byte(uint16_t addr)
         return m_ApuIoExtended[addr - 0x4018];
     }
 
-    return m_Cartridge[addr - 0x4020];
+    return m_Rom[addr - 0x4020];
 }
 
 const uint8_t& Memory::access_byte(uint16_t addr) const
@@ -45,4 +45,10 @@ void Memory::write_word(uint16_t addr, uint16_t data)
     const uint8_t lo_byte = data & 0xFFU;
     access_byte(addr)     = lo_byte;
     access_byte(addr + 1) = hi_byte;
+}
+
+void Memory::write_rom(uint16_t start_addr, std::span<const uint8_t> buf)
+{
+    const uint16_t rom_start_addr = start_addr - 0x4020;
+    memcpy(m_Rom.data() + rom_start_addr, buf.data(), buf.size());
 }

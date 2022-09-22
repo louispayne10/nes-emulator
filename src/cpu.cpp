@@ -276,6 +276,20 @@ uint8_t CPU6502::process_instruction()
     return handler_it->second.cycles;
 }
 
+void CPU6502::load_prg_rom(std::span<const uint8_t> buf)
+{
+    // TODO: validate size of data passed in
+    memory.write_rom(0x8000, buf);
+    if (buf.size() == 16 * 1024) {
+        memory.write_rom(0xC000, buf);
+    }
+}
+
+void CPU6502::reset()
+{
+    registers.pc = memory.read_word(0xFFFC);
+}
+
 void CPU6502::stack_push(uint8_t data)
 {
     memory.write_byte(registers.s + 0x100, data);

@@ -10,12 +10,16 @@ int main(int argc, char* argv[])
         fmt::print("usage: <program_name> <path_to_rom>");
         return -1;
     }
-    CPU6502 cpu;
 
     auto cart = Cartridge::from_file(argv[1]);
     if (!cart.has_value()) {
         info_message("failed to load cart");
     }
+
+    CPU6502 cpu;
+    cpu.load_prg_rom(cart->get_program_data());
+    cpu.reset();
+
 #if 0
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window* window = SDL_CreateWindow("An SDL2 window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480,
