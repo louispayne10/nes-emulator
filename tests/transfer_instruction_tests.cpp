@@ -52,3 +52,13 @@ TEST_CASE("txs imp", "[txs],[cpu],[imp],[instruction]")
 
     REQUIRE(cpu.registers.s == 0xF0);
 }
+
+TEST_CASE("tya imp", "[tya],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_TYA_IMP);
+    cpu.registers.y = 46;
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.a == 46);
+}

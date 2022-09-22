@@ -245,6 +245,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_TSX_IMP] = { "TSX", &CPU6502::tsx, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_TXA_IMP] = { "TXA", &CPU6502::txa, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_TXS_IMP] = { "TXS", &CPU6502::txs, &CPU6502::imp, 2 };
+    m_InstructionMap[OPCODE_TYA_IMP] = { "TYA", &CPU6502::tya, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -995,4 +996,10 @@ void CPU6502::txa(uint16_t)
 void CPU6502::txs(uint16_t)
 {
     registers.s = registers.x;
+}
+
+void CPU6502::tya(uint16_t)
+{
+    registers.a = registers.y;
+    adjust_zero_and_negative_flags(registers.a);
 }
