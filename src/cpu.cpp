@@ -211,6 +211,7 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_ROR_ABSX] = { "ROR", &CPU6502::ror, &CPU6502::absx, 7 };
 
     m_InstructionMap[OPCODE_RTI_IMP] = { "RTI", &CPU6502::rti, &CPU6502::imp, 6 };
+    m_InstructionMap[OPCODE_RTS_IMP] = { "RTS", &CPU6502::rts, &CPU6502::imp, 6 };
 }
 
 void CPU6502::next_cycle()
@@ -859,4 +860,10 @@ void CPU6502::rti(uint16_t data_addr)
 {
     (void)data_addr;
     NOT_IMPLEMENTED();
+}
+
+void CPU6502::rts(uint16_t data_addr)
+{
+    (void)data_addr;
+    registers.pc = stack_pop() + 1;
 }

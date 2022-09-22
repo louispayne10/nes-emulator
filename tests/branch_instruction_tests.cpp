@@ -219,3 +219,20 @@ TEST_CASE("nop imp", "[nop],[cpu],[imp],[instruction]")
 
     REQUIRE(cpu.registers.pc == 1);
 }
+
+TEST_CASE("rts imp", "[rts],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.registers.pc = 40;
+    cpu.memory.write_byte(40, OPCODE_JSR_ABS);
+    cpu.memory.write_word(41, 0x220);
+    cpu.memory.write_byte(0x220, 60);
+    cpu.memory.write_byte(60, OPCODE_RTS_IMP);
+
+    cpu.process_instruction();
+    REQUIRE(cpu.registers.pc == 60);
+    REQUIRE(cpu.stack_top() == 42);
+
+    cpu.process_instruction();
+    REQUIRE(cpu.registers.pc == 43);
+}
