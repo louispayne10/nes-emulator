@@ -1,5 +1,6 @@
 add_executable(nes-emulator main.cpp
                             cpu.cpp
-                            memory.cpp)
+                            memory.cpp
+                            cartridge.cpp)
 
 target_link_libraries(nes-emulator PRIVATE fmt::fmt SDL2 project_warnings)
