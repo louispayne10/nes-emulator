@@ -142,6 +142,7 @@ public:
     void tax(uint16_t data_addr);
     void tay(uint16_t data_addr);
     void tsx(uint16_t data_addr);
+    void txa(uint16_t data_addr);
 
     // helpers
     void asl_acc(uint16_t data_addr);

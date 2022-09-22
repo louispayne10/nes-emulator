@@ -80,6 +80,7 @@ enum OPCODE {
     OPCODE_STA_ZP   = 0x85,
     OPCODE_STX_ZP   = 0x86,
     OPCODE_DEY_IMP  = 0x88,
+    OPCODE_TXA_IMP  = 0x8A,
     OPCODE_STY_ABS  = 0x8C,
     OPCODE_STA_ABS  = 0x8D,
     OPCODE_STX_ABS  = 0x8E,
