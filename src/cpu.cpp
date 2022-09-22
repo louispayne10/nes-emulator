@@ -221,6 +221,8 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_SBC_ABSY] = { "SBC", &CPU6502::sbc, &CPU6502::absy, 4 };
     m_InstructionMap[OPCODE_SBC_INDX] = { "SBC", &CPU6502::sbc, &CPU6502::indx, 6 };
     m_InstructionMap[OPCODE_SBC_INDY] = { "SBC", &CPU6502::sbc, &CPU6502::indy, 5 };
+
+    m_InstructionMap[OPCODE_SEC_IMP] = { "SEC", &CPU6502::sec, &CPU6502::imp, 2 };
 }
 
 void CPU6502::next_cycle()
@@ -897,4 +899,9 @@ void CPU6502::sbc(uint16_t data_addr)
     if (registers.a == 0) {
         registers.p.set_zero_flag();
     }
+}
+
+void CPU6502::sec(uint16_t)
+{
+    registers.p.set_carry_bit();
 }

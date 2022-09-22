@@ -36,3 +36,12 @@ TEST_CASE("clv imp", "[clv],[cpu],[imp],[instruction]")
 
     REQUIRE(!cpu.registers.p.overflow_flag_set());
 }
+
+TEST_CASE("sec imp", "[sec],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_SEC_IMP);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.p.carry_bit_set());
+}
