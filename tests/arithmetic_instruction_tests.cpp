@@ -286,4 +286,29 @@ TEST_CASE("rol zp", "[rol],[cpu],[zp],[instruction]")
     cpu.process_instruction();
 
     REQUIRE(cpu.memory.read_byte(0x20) == 0b1010'1010);
+    REQUIRE(!cpu.registers.p.carry_bit_set());
+}
+
+TEST_CASE("ror acc", "[ror],[cpu],[acc],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_ROR_ACC);
+    cpu.registers.p.set_carry_bit();
+    cpu.registers.a = 0b1000'1101;
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.a == 0b1100'0110);
+    REQUIRE(cpu.registers.p.carry_bit_set());
+}
+
+TEST_CASE("ror zp", "[ror],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_ROR_ZP);
+    cpu.memory.write_byte(1, 0x20);
+    cpu.memory.write_byte(0x20, 0b1010'1010);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.memory.read_byte(0x20) == 0b0101'0101);
+    REQUIRE(!cpu.registers.p.carry_bit_set());
 }

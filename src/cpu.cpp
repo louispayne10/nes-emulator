@@ -203,6 +203,12 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_ROL_ZPX]  = { "ROL", &CPU6502::rol, &CPU6502::zpx, 6 };
     m_InstructionMap[OPCODE_ROL_ABS]  = { "ROL", &CPU6502::rol, &CPU6502::abs, 6 };
     m_InstructionMap[OPCODE_ROL_ABSX] = { "ROL", &CPU6502::rol, &CPU6502::absx, 7 };
+
+    m_InstructionMap[OPCODE_ROR_ACC]  = { "ROR", &CPU6502::ror_acc, nullptr, 2 };
+    m_InstructionMap[OPCODE_ROR_ZP]   = { "ROR", &CPU6502::ror, &CPU6502::zp, 5 };
+    m_InstructionMap[OPCODE_ROR_ZPX]  = { "ROR", &CPU6502::ror, &CPU6502::zpx, 6 };
+    m_InstructionMap[OPCODE_ROR_ABS]  = { "ROR", &CPU6502::ror, &CPU6502::abs, 6 };
+    m_InstructionMap[OPCODE_ROR_ABSX] = { "ROR", &CPU6502::ror, &CPU6502::absx, 7 };
 }
 
 void CPU6502::next_cycle()
@@ -812,7 +818,36 @@ uint8_t CPU6502::rol_impl(uint8_t data)
 
     data <<= 1;
     if (old_carry) {
-        data |= (uint8_t)StatusRegFlag::Carry;
+        data |= (uint8_t)1;
+    } else {
+        data &= ~((uint8_t)1);
+    }
+
+    return data;
+}
+
+void CPU6502::ror(uint16_t data_addr)
+{
+    uint8_t data = memory.read_byte(data_addr);
+    data         = ror_impl(data);
+    memory.write_byte(data_addr, data);
+}
+
+void CPU6502::ror_acc(uint16_t data_addr)
+{
+    (void)data_addr;
+    registers.a = ror_impl(registers.a);
+}
+
+uint8_t CPU6502::ror_impl(uint8_t data)
+{
+    const uint8_t old_carry = registers.p.carry_bit_set();
+
+    data >>= 1;
+    if (old_carry) {
+        data |= (uint8_t)(1 << 7);
+    } else {
+        data &= ~((uint8_t)(1 << 7));
     }
 
     return data;
