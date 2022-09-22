@@ -306,3 +306,36 @@ TEST_CASE("ldy imm", "[ldy],[cpu],[imm],[instruction]")
         REQUIRE(cpu.registers.p.negative_flag_set());
     }
 }
+
+TEST_CASE("sta zp", "[sta],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_STA_ZP);
+    cpu.memory.write_byte(1, 0x20);
+    cpu.memory.write_byte(0x20, 42);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.a == 42);
+}
+
+TEST_CASE("stx zp", "[stx],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_STX_ZP);
+    cpu.memory.write_byte(1, 0x20);
+    cpu.memory.write_byte(0x20, 43);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.x == 43);
+}
+
+TEST_CASE("sty zp", "[sty],[cpu],[zp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_STY_ZP);
+    cpu.memory.write_byte(1, 0x20);
+    cpu.memory.write_byte(0x20, 44);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.y == 44);
+}

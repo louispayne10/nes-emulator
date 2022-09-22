@@ -225,6 +225,20 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_SEC_IMP] = { "SEC", &CPU6502::sec, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_SED_IMP] = { "SED", &CPU6502::sed, &CPU6502::imp, 2 };
     m_InstructionMap[OPCODE_SEI_IMP] = { "SEI", &CPU6502::sei, &CPU6502::imp, 2 };
+
+    m_InstructionMap[OPCODE_STA_ZP]   = { "STA", &CPU6502::sta, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_STA_ZPX]  = { "STA", &CPU6502::sta, &CPU6502::zpx, 4 };
+    m_InstructionMap[OPCODE_STA_ABS]  = { "STA", &CPU6502::sta, &CPU6502::abs, 4 };
+    m_InstructionMap[OPCODE_STA_ABSX] = { "STA", &CPU6502::sta, &CPU6502::absx, 5 };
+    m_InstructionMap[OPCODE_STA_ABSY] = { "STA", &CPU6502::sta, &CPU6502::absy, 5 };
+    m_InstructionMap[OPCODE_STA_INDX] = { "STA", &CPU6502::sta, &CPU6502::indx, 6 };
+    m_InstructionMap[OPCODE_STA_INDY] = { "STA", &CPU6502::sta, &CPU6502::indy, 6 };
+    m_InstructionMap[OPCODE_STX_ZP]   = { "STX", &CPU6502::stx, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_STX_ZPY]  = { "STX", &CPU6502::stx, &CPU6502::zpy, 4 };
+    m_InstructionMap[OPCODE_STX_ABS]  = { "STX", &CPU6502::stx, &CPU6502::abs, 4 };
+    m_InstructionMap[OPCODE_STY_ZP]   = { "STY", &CPU6502::sty, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_STY_ZPX]  = { "STY", &CPU6502::sty, &CPU6502::zpx, 4 };
+    m_InstructionMap[OPCODE_STY_ABS]  = { "STY", &CPU6502::sty, &CPU6502::abs, 4 };
 }
 
 void CPU6502::next_cycle()
@@ -916,4 +930,19 @@ void CPU6502::sed(uint16_t)
 void CPU6502::sei(uint16_t)
 {
     registers.p.set_int_disable_flag();
+}
+
+void CPU6502::sta(uint16_t data_addr)
+{
+    registers.a = memory.read_byte(data_addr);
+}
+
+void CPU6502::stx(uint16_t data_addr)
+{
+    registers.x = memory.read_byte(data_addr);
+}
+
+void CPU6502::sty(uint16_t data_addr)
+{
+    registers.y = memory.read_byte(data_addr);
 }
