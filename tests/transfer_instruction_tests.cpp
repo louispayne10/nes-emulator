@@ -22,3 +22,13 @@ TEST_CASE("tay imp", "[tay],[cpu],[imp],[instruction]")
 
     REQUIRE(cpu.registers.y == 43);
 }
+
+TEST_CASE("tsx imp", "[tsx],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_TSX_IMP);
+    cpu.stack_push(40);
+    cpu.process_instruction();
+
+    REQUIRE(cpu.registers.x == 0xFE);
+}
