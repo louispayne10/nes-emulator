@@ -19,4 +19,11 @@ void debug_message(const char* filename, int line_number, const S& format, Args&
 
 #define DEBUG_LOG(format, ...) debug_message(__FILE__, __LINE__, FMT_STRING(format), __VA_ARGS__)
 
+template <typename... Args>
+void info_message(fmt::format_string<Args...> fmt_string, Args&&... args)
+{
+    fmt::print(stderr, fmt_string, std::forward<Args>(args)...);
+    fmt::print(stderr, "\n");
+}
+
 #define NOT_IMPLEMENTED() assert(false && "Not implemented yet")
