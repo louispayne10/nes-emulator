@@ -2,6 +2,8 @@
 
 #include "memory.h"
 
+#include <fmt/format.h>
+
 #include <array>
 #include <cstdint>
 #include <span>
@@ -50,8 +52,30 @@ struct StatusRegister
     void set_decimal_flag() { reg |= StatusRegFlag::Decimal; }
     void clear_decimal_flag() { reg &= ~StatusRegFlag::Decimal; }
     bool decimal_flag_set() const { return reg & StatusRegFlag::Decimal; }
+
+    bool bflag_flag_set() const { return reg & StatusRegFlag::BFlag; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
+
+template <>
+struct fmt::formatter<StatusRegister>
+{
+    constexpr auto parse(format_parse_context& ctx) -> decltype(ctx.begin()) { return ctx.begin(); }
+
+    template <typename FormatContext>
+    auto format(StatusRegister reg, FormatContext& ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(),
+                              "{}{}{}{}{}{}{}",
+                              reg.negative_flag_set() ? 'N' : '-',
+                              reg.overflow_flag_set() ? 'O' : '-',
+                              reg.bflag_flag_set() ? 'B' : '-',
+                              reg.decimal_flag_set() ? 'D' : '-',
+                              reg.int_disable_flag_set() ? 'I' : '-',
+                              reg.zero_flag_set() ? 'Z' : '-',
+                              reg.carry_bit_set() ? 'C' : '-');
+    }
+};
 
 struct CpuRegisters
 {
@@ -72,8 +96,11 @@ public:
     CpuRegisters registers = {};
     Memory memory;
 
-    void next_cycle();
+    bool next_cycle();
+
     uint8_t cycles_remaining = 0;
+    uint64_t cycle_count     = 0;
+
     uint8_t process_instruction();
 
     void load_prg_rom(std::span<const uint8_t> buf);

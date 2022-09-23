@@ -11,6 +11,7 @@ AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLambdasOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
+BinPackArguments: false
 AlwaysBreakTemplateDeclarations: Yes
 NamespaceIndentation: None
 PointerAlignment: Left

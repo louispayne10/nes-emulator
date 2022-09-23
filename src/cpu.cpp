@@ -251,14 +251,16 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_TYA_IMP] = { "TYA", &CPU6502::tya, &CPU6502::imp, 2 };
 }
 
-void CPU6502::next_cycle()
+bool CPU6502::next_cycle()
 {
+    cycle_count++;
     if (cycles_remaining > 0) {
         cycles_remaining--;
-        return;
+        return false;
     }
 
     cycles_remaining = process_instruction() - 1;
+    return true;
 }
 
 uint8_t CPU6502::process_instruction()
@@ -272,6 +274,7 @@ uint8_t CPU6502::process_instruction()
     auto op                  = handler_it->second.operation_fn;
     auto addr                = handler_it->second.addressing_fn;
     const uint16_t data_addr = addr ? (this->*addr)() : 0;
+    info_message("{}", handler_it->second.name);
     (this->*op)(data_addr);
     return handler_it->second.cycles;
 }
@@ -288,6 +291,7 @@ void CPU6502::load_prg_rom(std::span<const uint8_t> buf)
 void CPU6502::reset()
 {
     registers.pc = memory.read_word(0xFFFC);
+    cycle_count += 7;
 }
 
 void CPU6502::stack_push(uint8_t data)
