@@ -630,10 +630,9 @@ void CPU6502::clc(uint16_t data_addr)
     registers.p.clear_carry_flag();
 }
 
-void CPU6502::cld(uint16_t data_addr)
+void CPU6502::cld(uint16_t)
 {
-    (void)data_addr;
-    NOT_IMPLEMENTED();
+    registers.p.clear_decimal_flag();
 }
 
 void CPU6502::cli(uint16_t data_addr)

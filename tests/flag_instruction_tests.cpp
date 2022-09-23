@@ -63,3 +63,12 @@ TEST_CASE("sei imp", "[sei],[cpu],[imp],[instruction]")
 
     REQUIRE(cpu.registers.p.int_disable_flag_set());
 }
+
+TEST_CASE("cld imp", "[cld],[cpu],[imp],[instruction]")
+{
+    CPU6502 cpu;
+    cpu.memory.write_byte(0, OPCODE_CLD_IMP);
+    cpu.process_instruction();
+
+    REQUIRE(!cpu.registers.p.decimal_flag_set());
+}
