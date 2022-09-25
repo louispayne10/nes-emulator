@@ -116,15 +116,16 @@ TEST_CASE("asl zp", "[asl],[cpu],[zp],[instruction]")
 TEST_CASE("asl abs", "[asl],[cpu],[abs],[instruction]")
 {
     CPU6502 cpu;
-    cpu.memory.write_byte(0, OPCODE_ASL_ABS);
+    cpu.registers.pc = 0xC400;
+    cpu.memory.write_byte(0xC400, OPCODE_ASL_ABS);
 
     SECTION("non zero, non negative, carry asl")
     {
-        cpu.memory.write_word(1, 0xB0);
-        cpu.memory.write_byte(0xB0, 0b1000'1000);
+        cpu.memory.write_word(0xC401, 0xC500);
+        cpu.memory.write_byte(0xC500, 0b1000'1000);
         cpu.process_instruction();
 
-        REQUIRE(cpu.memory.read_byte(0xB0) == 0b0001'0000);
+        REQUIRE(cpu.memory.read_byte(0xC500) == 0b0001'0000);
         REQUIRE(cpu.registers.p.carry_bit_set());
     }
 }

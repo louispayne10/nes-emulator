@@ -173,25 +173,21 @@ TEST_CASE("jmp abs", "[jmp],[cpu],[abs],[instruction]")
     cpu.memory.write_byte(0, OPCODE_JMP_ABS);
 
     cpu.memory.write_word(1, 0x220);
-    cpu.memory.write_byte(0x220, 0x40);
     cpu.process_instruction();
 
-    REQUIRE(cpu.registers.pc == 0x40);
+    REQUIRE(cpu.registers.pc == 0x220);
 }
 
 TEST_CASE("jmp ind", "[jmp],[cpu],[ind],[instruction]")
 {
     CPU6502 cpu;
     cpu.memory.write_byte(0, OPCODE_JMP_IND);
+    cpu.memory.write_word(1, 0x500);
+    cpu.memory.write_word(0x500, 0x600);
 
-    cpu.memory.write_byte(1, 0x34);
-    cpu.memory.write_byte(2, 0x12);
-    cpu.memory.write_byte(0x1234, 0x50);
-    cpu.memory.write_byte(0x1235, 0x12);
-    cpu.memory.write_byte(0x1250, 42);
     cpu.process_instruction();
 
-    REQUIRE(cpu.registers.pc == 42);
+    REQUIRE(cpu.registers.pc == 0x600);
 }
 
 TEST_CASE("jsr abs", "[jsr],[cpu],[ind],[instruction]")

@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <cstdlib>
+#include <optional>
 
 #include "cartridge.h"
 #include "cpu.h"
@@ -23,17 +25,19 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    auto cart = Cartridge::from_file(argv[1]);
+    std::optional<Cartridge> cart = Cartridge::from_file(argv[1]);
     if (!cart.has_value()) {
         info_message("failed to load cart");
+        return EXIT_FAILURE;
     }
 
     CPU6502 cpu;
+    cpu.verbose_log = true;
     cpu.load_prg_rom(cart->get_program_data());
     cpu.reset();
     log_cpu_state(cpu);
 
-    for (size_t i = 0; i < 100; ++i) {
+    for (size_t i = 0; i < 10000; ++i) {
         if (cpu.next_cycle()) {
             log_cpu_state(cpu);
         }

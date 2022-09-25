@@ -60,8 +60,6 @@ CPU6502::CPU6502()
 {
     registers.s = 0xFD;
     registers.p.set_int_disable_flag();
-    registers.p.set_overflow_bit();
-    registers.p.set_negative_flag();
 
     m_InstructionMap[OPCODE_LDA_IMM]  = { "LDA", &CPU6502::lda, &CPU6502::imm, 2 };
     m_InstructionMap[OPCODE_LDA_ZP]   = { "LDA", &CPU6502::lda, &CPU6502::zp, 3 };
@@ -271,10 +269,13 @@ uint8_t CPU6502::process_instruction()
         NOT_IMPLEMENTED();
     }
 
+    if (verbose_log) {
+        fmt::print(stderr, "{:#4X} {} {:#2X} ", registers.pc - 1, handler_it->second.name, opcode);
+    }
+
     auto op                  = handler_it->second.operation_fn;
     auto addr                = handler_it->second.addressing_fn;
     const uint16_t data_addr = addr ? (this->*addr)() : 0;
-    info_message("{}", handler_it->second.name);
     (this->*op)(data_addr);
     return handler_it->second.cycles;
 }
@@ -359,9 +360,9 @@ uint16_t CPU6502::zpy()
 
 uint16_t CPU6502::abs()
 {
-    const uint16_t instruction_offset = memory.read_word(registers.pc);
+    const uint16_t ret = memory.read_word(registers.pc);
     registers.pc += 2;
-    return instruction_offset;
+    return ret;
 }
 
 uint16_t CPU6502::absx()
@@ -794,7 +795,7 @@ void CPU6502::iny(uint16_t data_addr)
 
 void CPU6502::jmp(uint16_t data_addr)
 {
-    registers.pc = memory.read_byte(data_addr);
+    registers.pc = data_addr;
 }
 
 void CPU6502::jsr(uint16_t data_addr)
