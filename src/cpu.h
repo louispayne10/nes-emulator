@@ -13,8 +13,8 @@
 enum class StatusRegFlag : uint8_t {
     Carry      = (1 << 0),
     Zero       = (1 << 1),
-    IntDisable = (1 << 3),
-    Decimal    = (1 << 4),
+    IntDisable = (1 << 2),
+    Decimal    = (1 << 3),
     BFlag      = (1 << 5),
     Overflow   = (1 << 6),
     Negative   = (1 << 7)
@@ -54,6 +54,7 @@ struct StatusRegister
     bool decimal_flag_set() const { return reg & StatusRegFlag::Decimal; }
 
     bool bflag_flag_set() const { return reg & StatusRegFlag::BFlag; }
+    void set_bflag() { reg |= StatusRegFlag::BFlag; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
 
@@ -96,7 +97,7 @@ public:
     CpuRegisters registers = {};
     Memory memory;
 
-    bool next_cycle();
+    void next_cycle();
 
     uint8_t cycles_remaining = 0;
     uint64_t cycle_count     = 0;
@@ -190,9 +191,12 @@ public:
     void displace_pc_from_data_addr(uint16_t data_addr);
     void adjust_zero_and_negative_flags(uint8_t data);
 
-    void stack_push(uint8_t data);
-    uint8_t stack_top() const;
-    uint8_t stack_pop();
+    void stack_push_byte(uint8_t data);
+    void stack_push_word(uint16_t data);
+    uint8_t stack_top_byte() const;
+    uint16_t stack_top_word() const;
+    uint8_t stack_pop_byte();
+    uint16_t stack_pop_word();
 
     // TODO: Move this to a lookup table once we can
     using operation_fn_t  = void (CPU6502::*)(uint16_t);

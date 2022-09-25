@@ -6,18 +6,6 @@
 #include "cpu.h"
 #include "log.h"
 
-void log_cpu_state(const CPU6502& cpu)
-{
-    info_message("a: {:2X}  x: {:2X}  y: {:2X}  pc: {:4X}  s: {:2X}  flags: {}  cycles: {}",
-                 cpu.registers.a,
-                 cpu.registers.x,
-                 cpu.registers.y,
-                 cpu.registers.pc,
-                 cpu.registers.s,
-                 cpu.registers.p,
-                 cpu.cycle_count);
-}
-
 int main(int argc, char* argv[])
 {
     if (argc < 2) {
@@ -35,12 +23,9 @@ int main(int argc, char* argv[])
     cpu.verbose_log = true;
     cpu.load_prg_rom(cart->get_program_data());
     cpu.reset();
-    log_cpu_state(cpu);
 
     for (size_t i = 0; i < 10000; ++i) {
-        if (cpu.next_cycle()) {
-            log_cpu_state(cpu);
-        }
+        cpu.next_cycle();
     }
 
 #if 0

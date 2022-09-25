@@ -196,14 +196,13 @@ TEST_CASE("jsr abs", "[jsr],[cpu],[ind],[instruction]")
     cpu.memory.write_byte(0, OPCODE_JSR_ABS);
 
     cpu.memory.write_word(1, 0x220);
-    cpu.memory.write_byte(0x220, 0x40);
     cpu.process_instruction();
 
-    REQUIRE(cpu.registers.pc == 0x40);
+    REQUIRE(cpu.registers.pc == 0x220);
     // jsr pushes the address (minus one) of the return point onto the stack
     // since jsr is a 3 byte instruction the return point should be 3
     // hence 2 should be pushed onto the stack
-    REQUIRE(cpu.stack_top() == 2);
+    REQUIRE(cpu.stack_top_word() == 2);
 }
 
 TEST_CASE("nop imp", "[nop],[cpu],[imp],[instruction]")
@@ -221,13 +220,12 @@ TEST_CASE("rts imp", "[rts],[cpu],[imp],[instruction]")
     CPU6502 cpu;
     cpu.registers.pc = 40;
     cpu.memory.write_byte(40, OPCODE_JSR_ABS);
-    cpu.memory.write_word(41, 0x220);
-    cpu.memory.write_byte(0x220, 60);
-    cpu.memory.write_byte(60, OPCODE_RTS_IMP);
+    cpu.memory.write_word(41, 0xC400);
+    cpu.memory.write_byte(0xC400, OPCODE_RTS_IMP);
 
     cpu.process_instruction();
-    REQUIRE(cpu.registers.pc == 60);
-    REQUIRE(cpu.stack_top() == 42);
+    REQUIRE(cpu.registers.pc == 0xC400);
+    REQUIRE(cpu.stack_top_word() == 42);
 
     cpu.process_instruction();
     REQUIRE(cpu.registers.pc == 43);

@@ -5,6 +5,19 @@
 #include <cstdint>
 #include <utility>
 
+static void log_cpu_state(const CPU6502& cpu)
+{
+    info_message("a: {:2X}  x: {:2X}  y: {:2X}  pc: {:4X}  s: {:2X}  flags: {}({:2X})  cycles: {}",
+                 cpu.registers.a,
+                 cpu.registers.x,
+                 cpu.registers.y,
+                 cpu.registers.pc,
+                 cpu.registers.s,
+                 cpu.registers.p,
+                 (uint8_t)cpu.registers.p.reg,
+                 cpu.cycle_count);
+}
+
 static constexpr uint8_t BIT_6 = (1 << 6);
 static constexpr uint8_t BIT_7 = (1 << 7);
 
@@ -60,6 +73,7 @@ CPU6502::CPU6502()
 {
     registers.s = 0xFD;
     registers.p.set_int_disable_flag();
+    registers.p.set_bflag();
 
     m_InstructionMap[OPCODE_LDA_IMM]  = { "LDA", &CPU6502::lda, &CPU6502::imm, 2 };
     m_InstructionMap[OPCODE_LDA_ZP]   = { "LDA", &CPU6502::lda, &CPU6502::zp, 3 };
@@ -249,16 +263,16 @@ CPU6502::CPU6502()
     m_InstructionMap[OPCODE_TYA_IMP] = { "TYA", &CPU6502::tya, &CPU6502::imp, 2 };
 }
 
-bool CPU6502::next_cycle()
+void CPU6502::next_cycle()
 {
-    cycle_count++;
     if (cycles_remaining > 0) {
         cycles_remaining--;
-        return false;
+        cycle_count++;
+        return;
     }
 
     cycles_remaining = process_instruction() - 1;
-    return true;
+    cycle_count++;
 }
 
 uint8_t CPU6502::process_instruction()
@@ -270,7 +284,8 @@ uint8_t CPU6502::process_instruction()
     }
 
     if (verbose_log) {
-        fmt::print(stderr, "{:#4X} {} {:#2X} ", registers.pc - 1, handler_it->second.name, opcode);
+        fmt::print(stderr, "{:4X} {} {:2X} ", registers.pc - 1, handler_it->second.name, opcode);
+        log_cpu_state(*this);
     }
 
     auto op                  = handler_it->second.operation_fn;
@@ -295,21 +310,41 @@ void CPU6502::reset()
     cycle_count += 7;
 }
 
-void CPU6502::stack_push(uint8_t data)
+void CPU6502::stack_push_byte(uint8_t data)
 {
     memory.write_byte(registers.s + 0x100, data);
     registers.s--;
 }
 
-uint8_t CPU6502::stack_top() const
+void CPU6502::stack_push_word(uint16_t data)
+{
+    stack_push_byte(data & 0xFF);
+    stack_push_byte((data >> 8) & 0xFF);
+}
+
+uint8_t CPU6502::stack_top_byte() const
 {
     return memory.read_byte(registers.s + 0x100 + 1);
 }
 
-uint8_t CPU6502::stack_pop()
+uint16_t CPU6502::stack_top_word() const
 {
-    uint8_t val = stack_top();
+    const uint8_t lo_byte = memory.read_byte(registers.s + 0x100 + 2);
+    const uint8_t hi_byte = memory.read_byte(registers.s + 0x100 + 1);
+    return (hi_byte << 8) | lo_byte;
+}
+
+uint8_t CPU6502::stack_pop_byte()
+{
+    uint8_t val = stack_top_byte();
     registers.s++;
+    return val;
+}
+
+uint16_t CPU6502::stack_pop_word()
+{
+    uint16_t val = stack_top_word();
+    registers.s += 2;
     return val;
 }
 
@@ -800,8 +835,8 @@ void CPU6502::jmp(uint16_t data_addr)
 
 void CPU6502::jsr(uint16_t data_addr)
 {
-    stack_push(registers.pc - 1);
-    registers.pc = memory.read_byte(data_addr);
+    stack_push_word(registers.pc - 1);
+    registers.pc = data_addr;
 }
 
 void CPU6502::lsr(uint16_t data_addr)
@@ -845,19 +880,19 @@ void CPU6502::ora(uint16_t data_addr)
 void CPU6502::pha(uint16_t data_addr)
 {
     (void)data_addr;
-    stack_push(registers.a);
+    stack_push_byte(registers.a);
 }
 
 void CPU6502::php(uint16_t data_addr)
 {
     (void)data_addr;
-    stack_push((uint8_t)registers.p.reg);
+    stack_push_byte((uint8_t)registers.p.reg);
 }
 
 void CPU6502::pla(uint16_t addr_data)
 {
     (void)addr_data;
-    registers.a = stack_pop();
+    registers.a = stack_pop_byte();
     if (registers.a == 0) {
         registers.p.set_zero_flag();
     }
@@ -869,7 +904,7 @@ void CPU6502::pla(uint16_t addr_data)
 void CPU6502::plp(uint16_t data_addr)
 {
     (void)data_addr;
-    registers.p.reg = (StatusRegFlag)stack_pop();
+    registers.p.reg = (StatusRegFlag)stack_pop_byte();
 }
 
 void CPU6502::rol(uint16_t data_addr)
@@ -935,7 +970,7 @@ void CPU6502::rti(uint16_t data_addr)
 void CPU6502::rts(uint16_t data_addr)
 {
     (void)data_addr;
-    registers.pc = stack_pop() + 1;
+    registers.pc = stack_pop_word() + 1;
 }
 
 void CPU6502::sbc(uint16_t data_addr)
