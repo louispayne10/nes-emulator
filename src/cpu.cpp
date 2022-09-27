@@ -428,8 +428,9 @@ uint16_t CPU6502::indx()
     const uint8_t x       = registers.x;
 
     const uint8_t lsb_addr    = operand + x;
+    const uint8_t msb_addr    = lsb_addr + (uint8_t)1;
     const uint8_t lsb         = memory.read_byte(lsb_addr);
-    const uint8_t msb         = memory.read_byte(lsb_addr + 1);
+    const uint8_t msb         = memory.read_byte(msb_addr);
     const uint16_t final_addr = (uint16_t)((msb << 8) | lsb);
     return final_addr;
 }
