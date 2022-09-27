@@ -55,8 +55,11 @@ struct StatusRegister
     bool decimal_flag_set() const { return reg & StatusRegFlag::Decimal; }
 
     bool bflag_flag_set() const { return reg & StatusRegFlag::BFlag; }
+    void clear_bflag() { reg &= ~StatusRegFlag::BFlag; }
     void set_bflag() { reg |= StatusRegFlag::BFlag; }
 
+    bool unused_flag_set() const { return reg & StatusRegFlag::UnusedBit; }
+    void clear_unused_flag() { reg &= ~StatusRegFlag::UnusedBit; }
     void set_unused_flag() { reg |= StatusRegFlag::UnusedBit; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);

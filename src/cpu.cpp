@@ -938,10 +938,15 @@ uint8_t CPU6502::pla(uint16_t)
     return 0;
 }
 
-uint8_t CPU6502::plp(uint16_t data_addr)
+uint8_t CPU6502::plp(uint16_t)
 {
-    (void)data_addr;
-    registers.p.reg = (StatusRegFlag)stack_pop_byte();
+    // When we pull the break flag and bit 5 should be ignored
+    // So restore these to whatever state they were in before this
+    const bool bflag       = registers.p.bflag_flag_set();
+    const bool unused_flag = registers.p.unused_flag_set();
+    registers.p.reg        = (StatusRegFlag)stack_pop_byte();
+    bflag ? registers.p.set_bflag() : registers.p.clear_bflag();
+    unused_flag ? registers.p.set_unused_flag() : registers.p.clear_unused_flag();
     return 0;
 }
 
