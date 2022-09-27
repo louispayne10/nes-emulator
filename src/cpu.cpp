@@ -922,23 +922,20 @@ uint8_t CPU6502::pha(uint16_t data_addr)
     return 0;
 }
 
-uint8_t CPU6502::php(uint16_t data_addr)
+uint8_t CPU6502::php(uint16_t)
 {
-    (void)data_addr;
-    stack_push_byte((uint8_t)registers.p.reg);
+    // push status register with the break flag and bit 5 set to 1
+    StatusRegister to_push = registers.p;
+    to_push.set_bflag();
+    to_push.set_unused_flag();
+    stack_push_byte((uint8_t)to_push.reg);
     return 0;
 }
 
-uint8_t CPU6502::pla(uint16_t addr_data)
+uint8_t CPU6502::pla(uint16_t)
 {
-    (void)addr_data;
     registers.a = stack_pop_byte();
-    if (registers.a == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(registers.a)) {
-        registers.p.set_negative_flag();
-    }
+    adjust_zero_and_negative_flags(registers.a);
     return 0;
 }
 

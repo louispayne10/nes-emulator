@@ -15,6 +15,7 @@ enum class StatusRegFlag : uint8_t {
     Zero       = (1 << 1),
     IntDisable = (1 << 2),
     Decimal    = (1 << 3),
+    UnusedBit  = (1 << 4),
     BFlag      = (1 << 5),
     Overflow   = (1 << 6),
     Negative   = (1 << 7)
@@ -55,6 +56,8 @@ struct StatusRegister
 
     bool bflag_flag_set() const { return reg & StatusRegFlag::BFlag; }
     void set_bflag() { reg |= StatusRegFlag::BFlag; }
+
+    void set_unused_flag() { reg |= StatusRegFlag::UnusedBit; }
 };
 bool operator==(StatusRegister lhs, StatusRegister rhs);
 
