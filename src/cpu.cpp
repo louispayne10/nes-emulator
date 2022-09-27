@@ -885,24 +885,28 @@ uint8_t CPU6502::rol(uint16_t data_addr)
     return 0;
 }
 
-uint8_t CPU6502::rol_acc(uint16_t data_addr)
+uint8_t CPU6502::rol_acc(uint16_t)
 {
-    (void)data_addr;
     registers.a = rol_impl(registers.a);
     return 0;
 }
 
 uint8_t CPU6502::rol_impl(uint8_t data)
 {
+    const uint8_t old_bit_7 = data & (1 << 7);
     const uint8_t old_carry = registers.p.carry_bit_set();
-
     data <<= 1;
     if (old_carry) {
         data |= (uint8_t)1;
     } else {
         data &= ~((uint8_t)1);
     }
-
+    if (old_bit_7) {
+        registers.p.set_carry_bit();
+    } else {
+        registers.p.clear_carry_flag();
+    }
+    adjust_zero_and_negative_flags(data);
     return data;
 }
 
@@ -914,24 +918,28 @@ uint8_t CPU6502::ror(uint16_t data_addr)
     return 0;
 }
 
-uint8_t CPU6502::ror_acc(uint16_t data_addr)
+uint8_t CPU6502::ror_acc(uint16_t)
 {
-    (void)data_addr;
     registers.a = ror_impl(registers.a);
     return 0;
 }
 
 uint8_t CPU6502::ror_impl(uint8_t data)
 {
+    const uint8_t old_bit_0 = data & 1;
     const uint8_t old_carry = registers.p.carry_bit_set();
-
     data >>= 1;
     if (old_carry) {
         data |= (uint8_t)(1 << 7);
     } else {
         data &= ~((uint8_t)(1 << 7));
     }
-
+    if (old_bit_0) {
+        registers.p.set_carry_bit();
+    } else {
+        registers.p.clear_carry_flag();
+    }
+    adjust_zero_and_negative_flags(data);
     return data;
 }
 
