@@ -621,7 +621,11 @@ uint8_t CPU6502::beq(uint16_t data_addr)
 uint8_t CPU6502::bne(uint16_t data_addr)
 {
     if (!registers.p.zero_flag_set()) {
+        const uint16_t old_page = registers.pc & 0xFF00;
         displace_pc_from_data_addr(data_addr);
+        const uint16_t new_page = registers.pc & 0xFF00;
+        if (old_page != new_page) return 2;
+        return 1;
     }
     return 0;
 }
@@ -1072,19 +1076,19 @@ uint8_t CPU6502::sei(uint16_t)
 
 uint8_t CPU6502::sta(uint16_t data_addr)
 {
-    registers.a = memory.read_byte(data_addr);
+    memory.write_byte(data_addr, registers.a);
     return 0;
 }
 
 uint8_t CPU6502::stx(uint16_t data_addr)
 {
-    registers.x = memory.read_byte(data_addr);
+    memory.write_byte(data_addr, registers.x);
     return 0;
 }
 
 uint8_t CPU6502::sty(uint16_t data_addr)
 {
-    registers.y = memory.read_byte(data_addr);
+    memory.write_byte(data_addr, registers.y);
     return 0;
 }
 
