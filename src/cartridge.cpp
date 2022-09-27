@@ -31,7 +31,7 @@ std::optional<Cartridge> Cartridge::from_file(FILE* file)
         return std::nullopt;
     }
 
-    DEBUG_LOG("fread got eof after {} bytes", bytes_read);
+    // DEBUG_LOG("fread got eof after {} bytes", bytes_read);
     return from_memory(std::span(buffer.get(), bytes_read));
 }
 
@@ -45,12 +45,12 @@ std::optional<Cartridge> Cartridge::from_memory(std::span<uint8_t> buf)
     std::optional<Cartridge> cart(std::in_place);
     memcpy(&cart->m_Header, buf.data(), sizeof(Header));
 
-    info_message("program rom banks: {}", cart->m_Header.prg_bank_count);
-    info_message("video/character rom banks: {}", cart->m_Header.chr_bank_count);
-    info_message("control byte 1: {:08b}", cart->m_Header.control_byte_1);
-    info_message("control byte 2: {:08b}", cart->m_Header.control_byte_2);
-    info_message("ram banks: {}", cart->m_Header.ram_banks);
-    info_message("mapper number: {}", cart->m_Header.get_mapper_number());
+    // info_message("program rom banks: {}", cart->m_Header.prg_bank_count);
+    // info_message("video/character rom banks: {}", cart->m_Header.chr_bank_count);
+    // info_message("control byte 1: {:08b}", cart->m_Header.control_byte_1);
+    // info_message("control byte 2: {:08b}", cart->m_Header.control_byte_2);
+    // info_message("ram banks: {}", cart->m_Header.ram_banks);
+    // info_message("mapper number: {}", cart->m_Header.get_mapper_number());
 
     if (cart->m_Header.control_byte_1 & (1 << 1)) {
         info_message("has battery backed ram, not supported yet");

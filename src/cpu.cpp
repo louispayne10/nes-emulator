@@ -7,11 +7,10 @@
 
 static void log_cpu_state(const CPU6502& cpu)
 {
-    info_message("a: {:2X}  x: {:2X}  y: {:2X}  pc: {:4X}  s: {:2X}  flags: {}({:2X})  cycles: {}",
+    info_message("a: {:02X}  x: {:02X}  y: {:02X}  sp: {:02X}  flags: {}({:02X})  cycles: {:5}",
                  cpu.registers.a,
                  cpu.registers.x,
                  cpu.registers.y,
-                 cpu.registers.pc,
                  cpu.registers.s,
                  cpu.registers.p,
                  (uint8_t)cpu.registers.p.reg,
@@ -137,7 +136,7 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_BRK_IMP] = { "BRK", &CPU6502::brk, &CPU6502::imp, 7 };
 
-    m_InstructionMap[OPCODE_BVC_REL] = { "BCV", &CPU6502::bvc, &CPU6502::rel, 2 };
+    m_InstructionMap[OPCODE_BVC_REL] = { "BVC", &CPU6502::bvc, &CPU6502::rel, 2 };
 
     m_InstructionMap[OPCODE_BVS_REL] = { "BVS", &CPU6502::bvs, &CPU6502::rel, 2 };
 
@@ -284,7 +283,7 @@ uint8_t CPU6502::process_instruction()
     }
 
     if (verbose_log) {
-        fmt::print(stderr, "{:4X} {} {:2X} ", registers.pc - 1, handler_it->second.name, opcode);
+        fmt::print(stderr, "{:4X} {:4} {:02X}  ", registers.pc - 1, handler_it->second.name, opcode);
         log_cpu_state(*this);
     }
 
