@@ -470,29 +470,15 @@ uint8_t CPU6502::lda(uint16_t data_addr)
 
 uint8_t CPU6502::ldx(uint16_t data_addr)
 {
-    const uint8_t data = memory.read_byte(data_addr);
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(data)) {
-        registers.p.set_negative_flag();
-    }
-    registers.x = data;
-
+    registers.x = memory.read_byte(data_addr);
+    adjust_zero_and_negative_flags(registers.x);
     return 0;
 }
 
 uint8_t CPU6502::ldy(uint16_t data_addr)
 {
-    const uint8_t data = memory.read_byte(data_addr);
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(data)) {
-        registers.p.set_negative_flag();
-    }
-    registers.y = data;
-
+    registers.y = memory.read_byte(data_addr);
+    adjust_zero_and_negative_flags(registers.y);
     return 0;
 }
 
