@@ -704,66 +704,44 @@ uint8_t CPU6502::clv(uint16_t data_addr)
     return 0;
 }
 
+static void set_flags_from_compare(uint8_t reg, uint8_t mem_data, StatusRegister& flags)
+{
+    if (reg >= mem_data) {
+        flags.set_carry_bit();
+    } else {
+        flags.clear_carry_flag();
+    }
+    if (reg == mem_data) {
+        flags.set_zero_flag();
+    } else {
+        flags.clear_zero_flag();
+    }
+
+    if (is_negative(reg - mem_data)) {
+        flags.set_negative_flag();
+    } else {
+        flags.clear_negative_flag();
+    }
+}
+
 uint8_t CPU6502::cmp(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
-    if (registers.a >= data) {
-        registers.p.set_carry_bit();
-    } else {
-        registers.p.clear_carry_flag();
-    }
-    if (registers.a == data) {
-        registers.p.set_zero_flag();
-    } else {
-        registers.p.clear_zero_flag();
-    }
-
-    // TODO: validate that this is the correct behaviour
-    if (is_negative(registers.a - data)) {
-        registers.p.set_negative_flag();
-    }
+    set_flags_from_compare(registers.a, data, registers.p);
     return 0;
 }
 
 uint8_t CPU6502::cpx(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
-    if (registers.x >= data) {
-        registers.p.set_carry_bit();
-    } else {
-        registers.p.clear_carry_flag();
-    }
-    if (registers.x == data) {
-        registers.p.set_zero_flag();
-    } else {
-        registers.p.clear_zero_flag();
-    }
-
-    // TODO: validate that this is the correct behaviour
-    if (is_negative(registers.x - data)) {
-        registers.p.set_negative_flag();
-    }
+    set_flags_from_compare(registers.x, data, registers.p);
     return 0;
 }
 
 uint8_t CPU6502::cpy(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
-    if (registers.y >= data) {
-        registers.p.set_carry_bit();
-    } else {
-        registers.p.clear_carry_flag();
-    }
-    if (registers.y == data) {
-        registers.p.set_zero_flag();
-    } else {
-        registers.p.clear_zero_flag();
-    }
-
-    // TODO: validate that this is the correct behaviour
-    if (is_negative(registers.y - data)) {
-        registers.p.set_negative_flag();
-    }
+    set_flags_from_compare(registers.y, data, registers.p);
     return 0;
 }
 
