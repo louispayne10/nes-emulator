@@ -189,6 +189,7 @@ public:
     uint8_t asl_acc(uint16_t data_addr);
     uint8_t asl_impl(uint8_t data);
     uint8_t lsr_acc(uint16_t data_addr);
+    uint8_t lsr_impl(uint8_t data);
     uint8_t rol_acc(uint16_t data_addr);
     uint8_t rol_impl(uint8_t data);
     uint8_t ror_acc(uint16_t data_addr);

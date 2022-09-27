@@ -520,20 +520,13 @@ uint8_t CPU6502::and_op(uint16_t data_addr)
 
 uint8_t CPU6502::asl_impl(uint8_t data)
 {
-    if (is_negative(data)) {
+    if (data & BIT_7) {
         registers.p.set_carry_bit();
     } else {
         registers.p.clear_carry_flag();
     }
-
     data <<= 1;
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(data)) {
-        registers.p.set_negative_flag();
-    }
-
+    adjust_zero_and_negative_flags(data);
     return data;
 }
 
@@ -542,15 +535,12 @@ uint8_t CPU6502::asl(uint16_t data_addr)
     uint8_t data = memory.read_byte(data_addr);
     data         = asl_impl(data);
     memory.write_byte(data_addr, data);
-
     return 0;
 }
 
-uint8_t CPU6502::asl_acc(uint16_t data_addr)
+uint8_t CPU6502::asl_acc(uint16_t)
 {
-    (void)data_addr; // this instruction operates directly on the accumulator
     registers.a = asl_impl(registers.a);
-
     return 0;
 }
 
@@ -800,26 +790,30 @@ uint8_t CPU6502::jsr(uint16_t data_addr)
     return 0;
 }
 
-uint8_t CPU6502::lsr(uint16_t data_addr)
+uint8_t CPU6502::lsr_impl(uint8_t data)
 {
-    uint8_t data        = memory.read_byte(data_addr);
     const uint8_t carry = data & 1;
     data >>= 1;
-    memory.write_byte(data_addr, data);
     if (carry) {
         registers.p.set_carry_bit();
+    } else {
+        registers.p.clear_carry_flag();
     }
+    adjust_zero_and_negative_flags(data);
+    return data;
+}
+
+uint8_t CPU6502::lsr(uint16_t data_addr)
+{
+    uint8_t data = memory.read_byte(data_addr);
+    data         = lsr_impl(data);
+    memory.write_byte(data_addr, data);
     return 0;
 }
 
-uint8_t CPU6502::lsr_acc(uint16_t data_addr)
+uint8_t CPU6502::lsr_acc(uint16_t)
 {
-    (void)data_addr;
-    const uint8_t carry = registers.a & 1;
-    registers.a >>= 1;
-    if (carry) {
-        registers.p.set_carry_bit();
-    }
+    registers.a = lsr_impl(registers.a);
     return 0;
 }
 
