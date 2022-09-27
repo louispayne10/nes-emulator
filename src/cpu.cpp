@@ -571,25 +571,25 @@ uint8_t CPU6502::asl_acc(uint16_t data_addr)
     return 0;
 }
 
-void CPU6502::displace_pc_from_data_addr(uint16_t data_addr)
+uint8_t CPU6502::displace_pc_from_data_addr(uint16_t data_addr)
 {
-    uint8_t data = memory.read_byte(data_addr);
+    const uint16_t old_page = registers.pc & 0xFF00;
+    uint8_t data            = memory.read_byte(data_addr);
     if (is_positive(data)) {
         registers.pc += data;
     } else {
         data = twos_compliment_flip(data);
         registers.pc -= data;
     }
+    const uint16_t new_page = registers.pc & 0xFF00;
+    if (old_page != new_page) return 2;
+    return 1;
 }
 
 uint8_t CPU6502::bcc(uint16_t data_addr)
 {
     if (!registers.p.carry_bit_set()) {
-        const uint16_t old_page = registers.pc & 0xFF00;
-        displace_pc_from_data_addr(data_addr);
-        const uint16_t new_page = registers.pc & 0xFF00;
-        if (old_page != new_page) return 2;
-        return 1;
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }
@@ -597,11 +597,7 @@ uint8_t CPU6502::bcc(uint16_t data_addr)
 uint8_t CPU6502::bcs(uint16_t data_addr)
 {
     if (registers.p.carry_bit_set()) {
-        const uint16_t old_page = registers.pc & 0xFF00;
-        displace_pc_from_data_addr(data_addr);
-        const uint16_t new_page = registers.pc & 0xFF00;
-        if (old_page != new_page) return 2;
-        return 1;
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }
@@ -609,11 +605,7 @@ uint8_t CPU6502::bcs(uint16_t data_addr)
 uint8_t CPU6502::beq(uint16_t data_addr)
 {
     if (registers.p.zero_flag_set()) {
-        const uint16_t old_page = registers.pc & 0xFF00;
-        displace_pc_from_data_addr(data_addr);
-        const uint16_t new_page = registers.pc & 0xFF00;
-        if (old_page != new_page) return 2;
-        return 1;
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }
@@ -621,11 +613,7 @@ uint8_t CPU6502::beq(uint16_t data_addr)
 uint8_t CPU6502::bne(uint16_t data_addr)
 {
     if (!registers.p.zero_flag_set()) {
-        const uint16_t old_page = registers.pc & 0xFF00;
-        displace_pc_from_data_addr(data_addr);
-        const uint16_t new_page = registers.pc & 0xFF00;
-        if (old_page != new_page) return 2;
-        return 1;
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }
@@ -654,7 +642,7 @@ uint8_t CPU6502::bit(uint16_t data_addr)
 uint8_t CPU6502::bmi(uint16_t data_addr)
 {
     if (registers.p.negative_flag_set()) {
-        displace_pc_from_data_addr(data_addr);
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }
@@ -662,7 +650,7 @@ uint8_t CPU6502::bmi(uint16_t data_addr)
 uint8_t CPU6502::bpl(uint16_t data_addr)
 {
     if (!registers.p.negative_flag_set()) {
-        displace_pc_from_data_addr(data_addr);
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }
@@ -677,7 +665,7 @@ uint8_t CPU6502::brk(uint16_t data_addr)
 uint8_t CPU6502::bvc(uint16_t data_addr)
 {
     if (!registers.p.overflow_flag_set()) {
-        displace_pc_from_data_addr(data_addr);
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }
@@ -685,7 +673,7 @@ uint8_t CPU6502::bvc(uint16_t data_addr)
 uint8_t CPU6502::bvs(uint16_t data_addr)
 {
     if (registers.p.overflow_flag_set()) {
-        displace_pc_from_data_addr(data_addr);
+        return displace_pc_from_data_addr(data_addr);
     }
     return 0;
 }

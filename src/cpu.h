@@ -188,7 +188,7 @@ public:
     uint8_t ror_acc(uint16_t data_addr);
     uint8_t ror_impl(uint8_t data);
 
-    void displace_pc_from_data_addr(uint16_t data_addr);
+    uint8_t displace_pc_from_data_addr(uint16_t data_addr);
     void adjust_zero_and_negative_flags(uint8_t data);
 
     void stack_push_byte(uint8_t data);
