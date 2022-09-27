@@ -128,8 +128,8 @@ CPU6502::CPU6502()
 
     m_InstructionMap[OPCODE_BNE_REL] = { "BNE", &CPU6502::bne, &CPU6502::rel, 2 };
 
-    m_InstructionMap[OPCODE_BIT_ZP]  = { "BIT", &CPU6502::bit, &CPU6502::zp, 2 };
-    m_InstructionMap[OPCODE_BIT_ABS] = { "BIT", &CPU6502::bit, &CPU6502::abs, 3 };
+    m_InstructionMap[OPCODE_BIT_ZP]  = { "BIT", &CPU6502::bit, &CPU6502::zp, 3 };
+    m_InstructionMap[OPCODE_BIT_ABS] = { "BIT", &CPU6502::bit, &CPU6502::abs, 4 };
 
     m_InstructionMap[OPCODE_BMI_REL] = { "BMI", &CPU6502::bmi, &CPU6502::rel, 2 };
 
