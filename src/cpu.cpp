@@ -496,27 +496,30 @@ uint8_t CPU6502::ldy(uint16_t data_addr)
     return 0;
 }
 
+void CPU6502::adjust_overflow_flag(uint8_t op1, uint8_t op2, uint8_t res)
+{
+    if (is_positive(op1) && is_positive(op2) && is_negative(res)) {
+        registers.p.set_overflow_bit();
+    } else if (is_negative(op1) && is_negative(op2) && is_positive(res)) {
+        registers.p.set_overflow_bit();
+    } else {
+        registers.p.clear_overflow_flag();
+    }
+}
+
 uint8_t CPU6502::adc(uint16_t data_addr)
 {
-    const uint8_t data = memory.read_byte(data_addr);
-    const uint16_t res = registers.a + data + registers.p.carry_bit_set();
-    if (res == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(data)) {
-        registers.p.set_negative_flag();
-    }
+    const uint8_t data    = memory.read_byte(data_addr);
+    const uint16_t res    = registers.a + data + registers.p.carry_bit_set();
+    const uint8_t old_acc = registers.a;
+    registers.a           = res & 0xFF;
+    adjust_zero_and_negative_flags(registers.a);
     if (res & 0xFF00) {
         registers.p.set_carry_bit();
+    } else {
+        registers.p.clear_carry_flag();
     }
-    if (is_positive(registers.a) && is_positive(data) && is_negative(res)) {
-        registers.p.set_overflow_bit();
-    }
-    if (is_negative(registers.a) && is_negative(data) && is_positive(res)) {
-        registers.p.set_overflow_bit();
-    }
-
-    registers.a = res & 0xFF;
+    adjust_overflow_flag(old_acc, data, res);
     return 0;
 }
 
