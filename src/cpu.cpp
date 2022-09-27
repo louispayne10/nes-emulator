@@ -992,7 +992,7 @@ uint8_t CPU6502::rts(uint16_t data_addr)
 uint8_t CPU6502::sbc(uint16_t data_addr)
 {
     const uint8_t data    = memory.read_byte(data_addr);
-    const uint16_t res    = registers.a - data - (~(uint8_t)registers.p.carry_bit_set());
+    const uint16_t res    = registers.a - data - ((uint8_t)1 - (uint8_t)registers.p.carry_bit_set());
     const uint8_t old_acc = registers.a;
     registers.a           = res & 0xFF;
     if (res > 0xFF) {
@@ -1000,15 +1000,8 @@ uint8_t CPU6502::sbc(uint16_t data_addr)
     } else {
         registers.p.set_carry_bit();
     }
-    if (is_positive(old_acc) && is_positive(data) && is_negative(registers.a)) {
-        registers.p.set_overflow_bit();
-    }
-    if (is_negative(old_acc) && is_negative(data) && is_positive(registers.a)) {
-        registers.p.set_overflow_bit();
-    }
-    if (registers.a == 0) {
-        registers.p.set_zero_flag();
-    }
+    adjust_overflow_flag(old_acc, data, registers.a);
+    adjust_zero_and_negative_flags(registers.a);
     return 0;
 }
 

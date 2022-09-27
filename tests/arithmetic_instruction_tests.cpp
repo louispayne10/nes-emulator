@@ -326,8 +326,8 @@ TEST_CASE("sbc imm", "[sbc],[cpu],[imm],[instruction]")
         cpu.memory.write_byte(1, 50);
         cpu.process_instruction();
 
-        // 150 - 50 - 255 (mod 256) = 101
-        REQUIRE(cpu.registers.a == 51);
+        // 150 - 50 - (1 - 0) = 49
+        REQUIRE(cpu.registers.a == 49);
         REQUIRE(!cpu.registers.p.overflow_flag_set());
     }
 
@@ -338,7 +338,7 @@ TEST_CASE("sbc imm", "[sbc],[cpu],[imm],[instruction]")
         cpu.registers.p.set_carry_bit();
         cpu.process_instruction();
 
-        // 150 - 50 - 254 = 102
-        REQUIRE(cpu.registers.a == 102);
+        // 150 - 50 - (1 - 1) = 100
+        REQUIRE(cpu.registers.a == 100);
     }
 }
