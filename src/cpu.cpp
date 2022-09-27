@@ -291,8 +291,7 @@ uint8_t CPU6502::process_instruction()
     auto op                  = handler_it->second.operation_fn;
     auto addr                = handler_it->second.addressing_fn;
     const uint16_t data_addr = addr ? (this->*addr)() : 0;
-    (this->*op)(data_addr);
-    return handler_it->second.cycles;
+    return (this->*op)(data_addr) + handler_it->second.cycles;
 }
 
 void CPU6502::load_prg_rom(std::span<const uint8_t> buf)
@@ -463,19 +462,14 @@ uint16_t CPU6502::ind()
     return memory.read_word(addr);
 }
 
-void CPU6502::lda(uint16_t data_addr)
+uint8_t CPU6502::lda(uint16_t data_addr)
 {
-    const uint8_t data = memory.read_byte(data_addr);
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(data)) {
-        registers.p.set_negative_flag();
-    }
-    registers.a = data;
+    registers.a = memory.read_byte(data_addr);
+    adjust_zero_and_negative_flags(registers.a);
+    return 0;
 }
 
-void CPU6502::ldx(uint16_t data_addr)
+uint8_t CPU6502::ldx(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     if (data == 0) {
@@ -485,9 +479,11 @@ void CPU6502::ldx(uint16_t data_addr)
         registers.p.set_negative_flag();
     }
     registers.x = data;
+
+    return 0;
 }
 
-void CPU6502::ldy(uint16_t data_addr)
+uint8_t CPU6502::ldy(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     if (data == 0) {
@@ -497,9 +493,11 @@ void CPU6502::ldy(uint16_t data_addr)
         registers.p.set_negative_flag();
     }
     registers.y = data;
+
+    return 0;
 }
 
-void CPU6502::adc(uint16_t data_addr)
+uint8_t CPU6502::adc(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     const uint16_t res = registers.a + data + registers.p.carry_bit_set();
@@ -520,9 +518,10 @@ void CPU6502::adc(uint16_t data_addr)
     }
 
     registers.a = res & 0xFF;
+    return 0;
 }
 
-void CPU6502::and_op(uint16_t data_addr)
+uint8_t CPU6502::and_op(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     registers.a &= data;
@@ -532,6 +531,8 @@ void CPU6502::and_op(uint16_t data_addr)
     if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
+
+    return 0;
 }
 
 uint8_t CPU6502::asl_impl(uint8_t data)
@@ -553,17 +554,21 @@ uint8_t CPU6502::asl_impl(uint8_t data)
     return data;
 }
 
-void CPU6502::asl(uint16_t data_addr)
+uint8_t CPU6502::asl(uint16_t data_addr)
 {
     uint8_t data = memory.read_byte(data_addr);
     data         = asl_impl(data);
     memory.write_byte(data_addr, data);
+
+    return 0;
 }
 
-void CPU6502::asl_acc(uint16_t data_addr)
+uint8_t CPU6502::asl_acc(uint16_t data_addr)
 {
     (void)data_addr; // this instruction operates directly on the accumulator
     registers.a = asl_impl(registers.a);
+
+    return 0;
 }
 
 void CPU6502::displace_pc_from_data_addr(uint16_t data_addr)
@@ -577,36 +582,51 @@ void CPU6502::displace_pc_from_data_addr(uint16_t data_addr)
     }
 }
 
-void CPU6502::bcc(uint16_t data_addr)
+uint8_t CPU6502::bcc(uint16_t data_addr)
 {
     if (!registers.p.carry_bit_set()) {
+        const uint16_t old_page = registers.pc & 0xFF00;
         displace_pc_from_data_addr(data_addr);
+        const uint16_t new_page = registers.pc & 0xFF00;
+        if (old_page != new_page) return 2;
+        return 1;
     }
+    return 0;
 }
 
-void CPU6502::bcs(uint16_t data_addr)
+uint8_t CPU6502::bcs(uint16_t data_addr)
 {
     if (registers.p.carry_bit_set()) {
+        const uint16_t old_page = registers.pc & 0xFF00;
         displace_pc_from_data_addr(data_addr);
-        return;
+        const uint16_t new_page = registers.pc & 0xFF00;
+        if (old_page != new_page) return 2;
+        return 1;
     }
+    return 0;
 }
 
-void CPU6502::beq(uint16_t data_addr)
+uint8_t CPU6502::beq(uint16_t data_addr)
 {
     if (registers.p.zero_flag_set()) {
+        const uint16_t old_page = registers.pc & 0xFF00;
         displace_pc_from_data_addr(data_addr);
+        const uint16_t new_page = registers.pc & 0xFF00;
+        if (old_page != new_page) return 2;
+        return 1;
     }
+    return 0;
 }
 
-void CPU6502::bne(uint16_t data_addr)
+uint8_t CPU6502::bne(uint16_t data_addr)
 {
     if (!registers.p.zero_flag_set()) {
         displace_pc_from_data_addr(data_addr);
     }
+    return 0;
 }
 
-void CPU6502::bit(uint16_t data_addr)
+uint8_t CPU6502::bit(uint16_t data_addr)
 {
     const uint8_t data   = memory.read_byte(data_addr);
     const uint8_t result = data & registers.a;
@@ -624,66 +644,76 @@ void CPU6502::bit(uint16_t data_addr)
         registers.p.set_overflow_bit();
     else
         registers.p.clear_overflow_flag();
+    return 0;
 }
 
-void CPU6502::bmi(uint16_t data_addr)
+uint8_t CPU6502::bmi(uint16_t data_addr)
 {
     if (registers.p.negative_flag_set()) {
         displace_pc_from_data_addr(data_addr);
     }
+    return 0;
 }
 
-void CPU6502::bpl(uint16_t data_addr)
+uint8_t CPU6502::bpl(uint16_t data_addr)
 {
     if (!registers.p.negative_flag_set()) {
         displace_pc_from_data_addr(data_addr);
     }
+    return 0;
 }
 
-void CPU6502::brk(uint16_t data_addr)
+uint8_t CPU6502::brk(uint16_t data_addr)
 {
     (void)data_addr;
     NOT_IMPLEMENTED();
+    return 0;
 }
 
-void CPU6502::bvc(uint16_t data_addr)
+uint8_t CPU6502::bvc(uint16_t data_addr)
 {
     if (!registers.p.overflow_flag_set()) {
         displace_pc_from_data_addr(data_addr);
     }
+    return 0;
 }
 
-void CPU6502::bvs(uint16_t data_addr)
+uint8_t CPU6502::bvs(uint16_t data_addr)
 {
     if (registers.p.overflow_flag_set()) {
         displace_pc_from_data_addr(data_addr);
     }
+    return 0;
 }
 
-void CPU6502::clc(uint16_t data_addr)
+uint8_t CPU6502::clc(uint16_t data_addr)
 {
     (void)data_addr;
     registers.p.clear_carry_flag();
+    return 0;
 }
 
-void CPU6502::cld(uint16_t)
+uint8_t CPU6502::cld(uint16_t)
 {
     registers.p.clear_decimal_flag();
+    return 0;
 }
 
-void CPU6502::cli(uint16_t data_addr)
+uint8_t CPU6502::cli(uint16_t data_addr)
 {
     (void)data_addr;
     registers.p.clear_int_disable_flag();
+    return 0;
 }
 
-void CPU6502::clv(uint16_t data_addr)
+uint8_t CPU6502::clv(uint16_t data_addr)
 {
     (void)data_addr;
     registers.p.clear_overflow_flag();
+    return 0;
 }
 
-void CPU6502::cmp(uint16_t data_addr)
+uint8_t CPU6502::cmp(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     if (registers.a >= data) {
@@ -701,9 +731,10 @@ void CPU6502::cmp(uint16_t data_addr)
     if (is_negative(registers.a - data)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::cpx(uint16_t data_addr)
+uint8_t CPU6502::cpx(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     if (registers.x >= data) {
@@ -721,9 +752,10 @@ void CPU6502::cpx(uint16_t data_addr)
     if (is_negative(registers.x - data)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::cpy(uint16_t data_addr)
+uint8_t CPU6502::cpy(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     if (registers.y >= data) {
@@ -741,9 +773,10 @@ void CPU6502::cpy(uint16_t data_addr)
     if (is_negative(registers.y - data)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::dec(uint16_t data_addr)
+uint8_t CPU6502::dec(uint16_t data_addr)
 {
     uint8_t data = memory.read_byte(data_addr) - 1;
     memory.write_byte(data_addr, data);
@@ -754,9 +787,10 @@ void CPU6502::dec(uint16_t data_addr)
     if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::dex(uint16_t data_addr)
+uint8_t CPU6502::dex(uint16_t data_addr)
 {
     (void)data_addr;
     registers.x--;
@@ -766,9 +800,10 @@ void CPU6502::dex(uint16_t data_addr)
     if (is_negative(registers.x)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::dey(uint16_t data_addr)
+uint8_t CPU6502::dey(uint16_t data_addr)
 {
     (void)data_addr;
     registers.y--;
@@ -778,9 +813,10 @@ void CPU6502::dey(uint16_t data_addr)
     if (is_negative(registers.y)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::eor(uint16_t data_addr)
+uint8_t CPU6502::eor(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     registers.a ^= data;
@@ -790,9 +826,10 @@ void CPU6502::eor(uint16_t data_addr)
     if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::inc(uint16_t data_addr)
+uint8_t CPU6502::inc(uint16_t data_addr)
 {
     uint8_t data = memory.read_byte(data_addr) + 1;
     memory.write_byte(data_addr, data);
@@ -802,9 +839,10 @@ void CPU6502::inc(uint16_t data_addr)
     if (is_negative(data)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::inx(uint16_t data_addr)
+uint8_t CPU6502::inx(uint16_t data_addr)
 {
     (void)data_addr;
     registers.x++;
@@ -814,9 +852,10 @@ void CPU6502::inx(uint16_t data_addr)
     if (is_negative(registers.x)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::iny(uint16_t data_addr)
+uint8_t CPU6502::iny(uint16_t data_addr)
 {
     (void)data_addr;
     registers.y++;
@@ -826,20 +865,23 @@ void CPU6502::iny(uint16_t data_addr)
     if (is_negative(registers.y)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::jmp(uint16_t data_addr)
+uint8_t CPU6502::jmp(uint16_t data_addr)
 {
     registers.pc = data_addr;
+    return 0;
 }
 
-void CPU6502::jsr(uint16_t data_addr)
+uint8_t CPU6502::jsr(uint16_t data_addr)
 {
     stack_push_word(registers.pc - 1);
     registers.pc = data_addr;
+    return 0;
 }
 
-void CPU6502::lsr(uint16_t data_addr)
+uint8_t CPU6502::lsr(uint16_t data_addr)
 {
     uint8_t data        = memory.read_byte(data_addr);
     const uint8_t carry = data & 1;
@@ -848,9 +890,10 @@ void CPU6502::lsr(uint16_t data_addr)
     if (carry) {
         registers.p.set_carry_bit();
     }
+    return 0;
 }
 
-void CPU6502::lsr_acc(uint16_t data_addr)
+uint8_t CPU6502::lsr_acc(uint16_t data_addr)
 {
     (void)data_addr;
     const uint8_t carry = registers.a & 1;
@@ -858,14 +901,16 @@ void CPU6502::lsr_acc(uint16_t data_addr)
     if (carry) {
         registers.p.set_carry_bit();
     }
+    return 0;
 }
 
-void CPU6502::nop(uint16_t data_addr)
+uint8_t CPU6502::nop(uint16_t data_addr)
 {
     (void)data_addr;
+    return 0;
 }
 
-void CPU6502::ora(uint16_t data_addr)
+uint8_t CPU6502::ora(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     registers.a |= data;
@@ -875,21 +920,24 @@ void CPU6502::ora(uint16_t data_addr)
     if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::pha(uint16_t data_addr)
+uint8_t CPU6502::pha(uint16_t data_addr)
 {
     (void)data_addr;
     stack_push_byte(registers.a);
+    return 0;
 }
 
-void CPU6502::php(uint16_t data_addr)
+uint8_t CPU6502::php(uint16_t data_addr)
 {
     (void)data_addr;
     stack_push_byte((uint8_t)registers.p.reg);
+    return 0;
 }
 
-void CPU6502::pla(uint16_t addr_data)
+uint8_t CPU6502::pla(uint16_t addr_data)
 {
     (void)addr_data;
     registers.a = stack_pop_byte();
@@ -899,25 +947,29 @@ void CPU6502::pla(uint16_t addr_data)
     if (is_negative(registers.a)) {
         registers.p.set_negative_flag();
     }
+    return 0;
 }
 
-void CPU6502::plp(uint16_t data_addr)
+uint8_t CPU6502::plp(uint16_t data_addr)
 {
     (void)data_addr;
     registers.p.reg = (StatusRegFlag)stack_pop_byte();
+    return 0;
 }
 
-void CPU6502::rol(uint16_t data_addr)
+uint8_t CPU6502::rol(uint16_t data_addr)
 {
     uint8_t data = memory.read_byte(data_addr);
     data         = rol_impl(data);
     memory.write_byte(data_addr, data);
+    return 0;
 }
 
-void CPU6502::rol_acc(uint16_t data_addr)
+uint8_t CPU6502::rol_acc(uint16_t data_addr)
 {
     (void)data_addr;
     registers.a = rol_impl(registers.a);
+    return 0;
 }
 
 uint8_t CPU6502::rol_impl(uint8_t data)
@@ -934,17 +986,19 @@ uint8_t CPU6502::rol_impl(uint8_t data)
     return data;
 }
 
-void CPU6502::ror(uint16_t data_addr)
+uint8_t CPU6502::ror(uint16_t data_addr)
 {
     uint8_t data = memory.read_byte(data_addr);
     data         = ror_impl(data);
     memory.write_byte(data_addr, data);
+    return 0;
 }
 
-void CPU6502::ror_acc(uint16_t data_addr)
+uint8_t CPU6502::ror_acc(uint16_t data_addr)
 {
     (void)data_addr;
     registers.a = ror_impl(registers.a);
+    return 0;
 }
 
 uint8_t CPU6502::ror_impl(uint8_t data)
@@ -961,19 +1015,21 @@ uint8_t CPU6502::ror_impl(uint8_t data)
     return data;
 }
 
-void CPU6502::rti(uint16_t data_addr)
+uint8_t CPU6502::rti(uint16_t data_addr)
 {
     (void)data_addr;
     NOT_IMPLEMENTED();
+    return 0;
 }
 
-void CPU6502::rts(uint16_t data_addr)
+uint8_t CPU6502::rts(uint16_t data_addr)
 {
     (void)data_addr;
     registers.pc = stack_pop_word() + 1;
+    return 0;
 }
 
-void CPU6502::sbc(uint16_t data_addr)
+uint8_t CPU6502::sbc(uint16_t data_addr)
 {
     const uint8_t data    = memory.read_byte(data_addr);
     const uint16_t res    = registers.a - data - (~(uint8_t)registers.p.carry_bit_set());
@@ -993,69 +1049,82 @@ void CPU6502::sbc(uint16_t data_addr)
     if (registers.a == 0) {
         registers.p.set_zero_flag();
     }
+    return 0;
 }
 
-void CPU6502::sec(uint16_t)
+uint8_t CPU6502::sec(uint16_t)
 {
     registers.p.set_carry_bit();
+    return 0;
 }
 
-void CPU6502::sed(uint16_t)
+uint8_t CPU6502::sed(uint16_t)
 {
     registers.p.set_decimal_flag();
+    return 0;
 }
 
-void CPU6502::sei(uint16_t)
+uint8_t CPU6502::sei(uint16_t)
 {
     registers.p.set_int_disable_flag();
+    return 0;
 }
 
-void CPU6502::sta(uint16_t data_addr)
+uint8_t CPU6502::sta(uint16_t data_addr)
 {
     registers.a = memory.read_byte(data_addr);
+    return 0;
 }
 
-void CPU6502::stx(uint16_t data_addr)
+uint8_t CPU6502::stx(uint16_t data_addr)
 {
     registers.x = memory.read_byte(data_addr);
+    return 0;
 }
 
-void CPU6502::sty(uint16_t data_addr)
+uint8_t CPU6502::sty(uint16_t data_addr)
 {
     registers.y = memory.read_byte(data_addr);
+    return 0;
 }
 
-void CPU6502::tax(uint16_t)
+uint8_t CPU6502::tax(uint16_t)
 {
     registers.x = registers.a;
     adjust_zero_and_negative_flags(registers.x);
+    return 0;
 }
 
-void CPU6502::tay(uint16_t)
+uint8_t CPU6502::tay(uint16_t)
 {
     registers.y = registers.a;
     adjust_zero_and_negative_flags(registers.y);
+    return 0;
 }
 
-void CPU6502::tsx(uint16_t)
+uint8_t CPU6502::tsx(uint16_t)
 {
     registers.x = registers.s;
     adjust_zero_and_negative_flags(registers.x);
+    return 0;
 }
 
-void CPU6502::txa(uint16_t)
+uint8_t CPU6502::txa(uint16_t)
 {
     registers.a = registers.x;
     adjust_zero_and_negative_flags(registers.a);
+    return 0;
 }
 
-void CPU6502::txs(uint16_t)
+uint8_t CPU6502::txs(uint16_t)
 {
     registers.s = registers.x;
+    return 0;
 }
 
-void CPU6502::tya(uint16_t)
+uint8_t CPU6502::tya(uint16_t)
 {
     registers.a = registers.y;
     adjust_zero_and_negative_flags(registers.a);
+    return 0;
 }
