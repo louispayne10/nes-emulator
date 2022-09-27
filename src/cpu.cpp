@@ -316,8 +316,8 @@ void CPU6502::stack_push_byte(uint8_t data)
 
 void CPU6502::stack_push_word(uint16_t data)
 {
-    stack_push_byte(data & 0xFF);
     stack_push_byte((data >> 8) & 0xFF);
+    stack_push_byte(data & 0xFF);
 }
 
 uint8_t CPU6502::stack_top_byte() const
@@ -327,8 +327,8 @@ uint8_t CPU6502::stack_top_byte() const
 
 uint16_t CPU6502::stack_top_word() const
 {
-    const uint8_t lo_byte = memory.read_byte(registers.s + 0x100 + 2);
-    const uint8_t hi_byte = memory.read_byte(registers.s + 0x100 + 1);
+    const uint8_t lo_byte = memory.read_byte(registers.s + 0x100 + 1);
+    const uint8_t hi_byte = memory.read_byte(registers.s + 0x100 + 2);
     return (hi_byte << 8) | lo_byte;
 }
 
