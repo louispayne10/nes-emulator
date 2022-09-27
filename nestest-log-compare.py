@@ -12,7 +12,6 @@ import subprocess
 import re
 import collections
 from itertools import zip_longest
-from pprint import pprint
 
 nestest_log_formatted_path = "./roms/nestest_formatted.log"
 
