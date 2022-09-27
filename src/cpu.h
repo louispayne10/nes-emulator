@@ -196,7 +196,6 @@ public:
 
     uint8_t displace_pc_from_data_addr(uint16_t data_addr);
     void adjust_zero_and_negative_flags(uint8_t data);
-    void adjust_overflow_flag(uint8_t op1, uint8_t op2, uint8_t res);
 
     void stack_push_byte(uint8_t data);
     void stack_push_word(uint16_t data);
