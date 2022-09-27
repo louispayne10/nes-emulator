@@ -509,13 +509,7 @@ uint8_t CPU6502::and_op(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     registers.a &= data;
-    if (registers.a == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(registers.a)) {
-        registers.p.set_negative_flag();
-    }
-
+    adjust_zero_and_negative_flags(registers.a);
     return 0;
 }
 
@@ -724,13 +718,7 @@ uint8_t CPU6502::dec(uint16_t data_addr)
 {
     uint8_t data = memory.read_byte(data_addr) - 1;
     memory.write_byte(data_addr, data);
-
-    if (data == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(data)) {
-        registers.p.set_negative_flag();
-    }
+    adjust_zero_and_negative_flags(data);
     return 0;
 }
 
@@ -828,12 +816,7 @@ uint8_t CPU6502::ora(uint16_t data_addr)
 {
     const uint8_t data = memory.read_byte(data_addr);
     registers.a |= data;
-    if (registers.a == 0) {
-        registers.p.set_zero_flag();
-    }
-    if (is_negative(registers.a)) {
-        registers.p.set_negative_flag();
-    }
+    adjust_zero_and_negative_flags(registers.a);
     return 0;
 }
 
