@@ -421,6 +421,9 @@ uint16_t CPU6502::absy()
 
     // Let it wrap on overflow - think that's correct behaviour
     const uint16_t byte_addr = instruction_offset + (uint16_t)y;
+    if (byte_addr & 0xFF) {
+        page_crossed = true;
+    }
     return byte_addr;
 }
 
