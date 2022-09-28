@@ -290,7 +290,9 @@ uint8_t CPU6502::process_instruction()
     auto op                  = handler_it->second.operation_fn;
     auto addr                = handler_it->second.addressing_fn;
     const uint16_t data_addr = addr ? (this->*addr)() : 0;
-    return (this->*op)(data_addr) + handler_it->second.cycles;
+    uint8_t cycles_required  = (this->*op)(data_addr) + handler_it->second.cycles;
+    page_crossed             = false;
+    return cycles_required;
 }
 
 void CPU6502::load_prg_rom(std::span<const uint8_t> buf)
@@ -442,6 +444,9 @@ uint16_t CPU6502::indy()
     const uint8_t msb                = memory.read_byte(operand + 1);
     const uint16_t intermediate_addr = (uint16_t)((msb << 8) | lsb);
     const uint16_t final_addr        = intermediate_addr + registers.y;
+    if (final_addr & 0xFF) {
+        page_crossed = true;
+    }
     return final_addr;
 }
 
@@ -466,7 +471,7 @@ uint8_t CPU6502::lda(uint16_t data_addr)
 {
     registers.a = memory.read_byte(data_addr);
     adjust_zero_and_negative_flags(registers.a);
-    return 0;
+    return (uint8_t)page_crossed;
 }
 
 uint8_t CPU6502::ldx(uint16_t data_addr)

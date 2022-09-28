@@ -218,5 +218,6 @@ public:
     };
     std::unordered_map<uint8_t, Instruction> m_InstructionMap;
 
-    bool verbose_log = false;
+    bool verbose_log  = false;
+    bool page_crossed = false;
 };
