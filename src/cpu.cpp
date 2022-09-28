@@ -283,7 +283,7 @@ uint8_t CPU6502::process_instruction()
     }
 
     if (verbose_log) {
-        fmt::print(stderr, "{:4X} {:4} {:02X}  ", registers.pc - 1, handler_it->second.name, opcode);
+        fmt::print(stderr, "{:04X} {:4} {:02X}  ", registers.pc - 1, handler_it->second.name, opcode);
         log_cpu_state(*this);
     }
 
@@ -461,11 +461,18 @@ uint16_t CPU6502::imp()
     return 0;
 }
 
+static uint16_t next_byte_in_page(uint16_t addr)
+{
+    return (addr & 0xFF00) + ((addr + 1) & 0xFF);
+}
+
 uint16_t CPU6502::ind()
 {
     const uint16_t addr = memory.read_word(registers.pc);
     registers.pc += 2;
-    return memory.read_word(addr);
+    const uint16_t lsb = memory.read_byte(addr);
+    const uint16_t msb = memory.read_byte(next_byte_in_page(addr));
+    return (msb << 8) | lsb;
 }
 
 uint8_t CPU6502::lda(uint16_t data_addr)
