@@ -441,7 +441,8 @@ uint16_t CPU6502::indy()
 {
     const uint8_t operand            = memory.read_byte(registers.pc++);
     const uint8_t lsb                = memory.read_byte(operand);
-    const uint8_t msb                = memory.read_byte(operand + 1);
+    const uint8_t msb_addr           = operand + 1;
+    const uint8_t msb                = memory.read_byte(msb_addr);
     const uint16_t intermediate_addr = (uint16_t)((msb << 8) | lsb);
     const uint16_t final_addr        = intermediate_addr + registers.y;
     if (final_addr & 0xFF) {
